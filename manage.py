@@ -2,8 +2,7 @@ import os
 import unittest
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from app.main import Application
-from app.main.models.db import db
+from app.main import Application, db
 
 app = Application(os.getenv("BOILERPLATE_ENV") or "dev")
 

@@ -10,26 +10,26 @@ class Config:
 
     SECRET_KEY = os.getenv("SECRET_KEY", "shhhitsasecret")
     DEBUG = False
-    DATABASE_HOST = os.getenv("POSTGRES_USER")
-    DATABASE_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-    DATABASE_DB = os.getenv("POSTGRES_DB")
-    DATABASE_PORT = os.getenv("POSTGRES_PORT")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, '../../tmp/devdb_main.db')}"
 
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, '../../tmp/devdb_test.db')}"
 
 
 class ProductionConfig(Config):
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
 
 
-def getConfig(env: str):
+def getConfig(env: str) -> Config:
     if env not in ["dev", "test", "prod"]:
         raise Exception("Invalid Environment")
 
