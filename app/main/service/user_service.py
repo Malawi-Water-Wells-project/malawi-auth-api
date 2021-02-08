@@ -10,9 +10,13 @@ def create_new_user(data, tribe_id, role):
         tribe_id=tribe_id,
         public_id=str(uuid4()),
         name=data.get("name"),
+        username=data.get("username"),
         role=role,
         created_on=datetime.utcnow()
     )
+
+    new_user.password = data.get("password")
+
     db.session.add(new_user)
     db.session.commit()
 
