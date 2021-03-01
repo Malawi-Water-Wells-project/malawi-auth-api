@@ -4,7 +4,7 @@ from flask_restx import Api
 from .models import db
 from app.main.controllers.tribe_controller import api as tribe_namespace
 from app.main.controllers.auth_controller import api as auth_namespace
-from app.main.models.well import Well
+from app.main.controllers.well_controller import api as well_namespace
 
 
 class Application():
@@ -27,3 +27,4 @@ class Application():
     def _bind_controllers(self):
         self.api.add_namespace(tribe_namespace, "/tribe")
         self.api.add_namespace(auth_namespace, "/auth")
+        self.api.add_namespace(well_namespace, "/well")

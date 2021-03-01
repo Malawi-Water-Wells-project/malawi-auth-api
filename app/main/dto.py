@@ -28,3 +28,7 @@ class AuthDto:
         "username": fields.String(required=True, description="Username"),
         "password": fields.String(required=True, description="Password")
     })
+
+
+class WellDto:
+    api = Namespace("well", description="Well Operations")
