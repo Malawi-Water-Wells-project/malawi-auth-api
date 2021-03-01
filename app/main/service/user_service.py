@@ -28,5 +28,9 @@ def update_user(user):
     db.session.commit()
 
 
+def find_user_by_id(id) -> Union[User, None]:
+    return User.query.filter_by(id=id).first()
+
+
 def find_user_by_username(username) -> Union[User, None]:
     return User.query.filter_by(username=username).first()

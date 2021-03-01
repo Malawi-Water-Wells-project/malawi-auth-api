@@ -14,6 +14,13 @@ class TribeDto:
         "password": fields.String(required=True, description="Admin Password")
     })
 
+    new_user = api.model("newuser", {
+        "token": fields.String(required=True, description="Join Token"),
+        "username": fields.String(required=True, description="Username"),
+        "password": fields.String(required=True, description="Password"),
+        "name": fields.String(required=True, description="Name")
+    })
+
 
 class AuthDto:
     api = Namespace("auth", description="Authentication Operations")

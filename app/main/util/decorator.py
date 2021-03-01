@@ -47,6 +47,6 @@ def user_is_tribe_admin(f):
                 "message": "You are not authorized to perform this action"
             }, 403
 
-        return f(*args, **kwargs)
+        return f(*args, **kwargs, tribe=tribe)
 
     return wrapper
