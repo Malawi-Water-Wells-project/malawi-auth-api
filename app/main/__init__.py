@@ -4,6 +4,7 @@ from flask_restx import Api
 from .models import db
 from app.main.controllers.tribe_controller import api as tribe_namespace
 from app.main.controllers.auth_controller import api as auth_namespace
+from app.main.models.well import Well
 
 
 class Application():
