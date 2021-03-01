@@ -1,13 +1,33 @@
+from app.main.models.user import User
+from app.main.util.decorator import user_logged_in, user_is_tribe_admin
 from app.main.constants import UserRoles
-from app.main.service.user_service import create_new_user
+from app.main.service.user_service import create_new_user, find_user_by_username
 from flask.globals import request
-from app.main.service.tribe_service import get_tribe_by_public_id, save_new_tribe
+from app.main.service.tribe_service import check_join_token, create_tribe_join_token, get_tribe_by_id, get_tribe_by_public_id, lookup_join_token, save_new_tribe
+from app.main.util.jwt import generate_jwt_keypair
 from flask_restx import Resource
 from app.main.dto import TribeDto
+import base64
+import json
 
 api = TribeDto.api
 _tribe = TribeDto.tribe
 _admin = TribeDto.admin
+_new_user = TribeDto.new_user
+
+
+@api.route("/")
+class GetTribe(Resource):
+    @api.doc("Gets the current tribe")
+    @user_logged_in
+    def get(self, jwt):
+        tribe_id = jwt.get("tribe_id")
+        tribe = get_tribe_by_id(tribe_id)
+
+        return {
+            "status": "Success",
+            "tribe": tribe.to_object()
+        }
 
 
 @api.route("/create")
@@ -37,6 +57,13 @@ class TribeAdmin(Resource):
                 "message": "Tribe not found"
             }, 404
 
+        existing_user = find_user_by_username(request.json.get("username"))
+        if existing_user is not None:
+            return {
+                "status": "Failure",
+                "message": "Username is already taken"
+            }, 400
+
         new_user = create_new_user(
             request.json,
             tribe.id,
@@ -47,3 +74,69 @@ class TribeAdmin(Resource):
             "status": "Success",
             "user": new_user.to_object()
         }, 201
+
+
+@api.route("/check-token")
+class CheckToken(Resource):
+    def post(self):
+        token = request.json["token"]
+
+        if token is None:
+            return {}, 500
+
+        decoded_token = json.loads(base64.b64decode(
+            token.encode("ascii")).decode("ascii"))
+
+        is_valid = check_join_token(decoded_token)
+
+        if not is_valid:
+            return {}, 500
+
+        return {
+            "status": "Success",
+            "isValid": True,
+            "token": decoded_token
+        }
+
+
+@api.route("/join")
+class JoinTribe(Resource):
+    @api.doc("Creates a standard user associated with a tribe")
+    @api.expect(_new_user, validate=True)
+    def post(self):
+        token = lookup_join_token(request.json["token"])
+
+        if token is None:
+            return {}, 400
+
+        tribe = get_tribe_by_public_id(token.get("tribe_id"))
+        if tribe is None:
+            return {}, 400
+
+        user = create_new_user(request.json, tribe.id, UserRoles.USER)
+
+        access_token, refresh_token = generate_jwt_keypair(
+            user.id, tribe.id, user.role)
+
+        return {
+            "status": "Success",
+            "user": user.to_object(),
+            "tokens": {
+                "access": access_token,
+                "refresh": refresh_token
+            }
+        }
+
+
+@api.route("/<tribe_id>/token")
+class TribeToken(Resource):
+    @api.doc("Creates a new standard user")
+    @user_logged_in
+    @user_is_tribe_admin
+    def get(self, jwt, tribe_id, tribe):
+        token = create_tribe_join_token(tribe.public_id, tribe.name)
+
+        return {
+            "status": "Success",
+            "token": str(base64.encodestring(json.dumps(token).encode()), "utf-8")
+        }

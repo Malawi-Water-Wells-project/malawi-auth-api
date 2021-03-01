@@ -10,9 +10,13 @@ def create_new_user(data, tribe_id, role):
         tribe_id=tribe_id,
         public_id=str(uuid4()),
         name=data.get("name"),
+        username=data.get("username"),
         role=role,
         created_on=datetime.utcnow()
     )
+
+    new_user.password = data.get("password")
+
     db.session.add(new_user)
     db.session.commit()
 
@@ -22,6 +26,10 @@ def create_new_user(data, tribe_id, role):
 def update_user(user):
     db.session.add(user)
     db.session.commit()
+
+
+def find_user_by_id(id) -> Union[User, None]:
+    return User.query.filter_by(id=id).first()
 
 
 def find_user_by_username(username) -> Union[User, None]:

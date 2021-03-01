@@ -9,7 +9,16 @@ class TribeDto:
         "longitude": fields.Float(required=True, description="Longitude of Tribe")
     })
     admin = api.model("admin", {
-        "name": fields.String(required=True, description="Admin Name")
+        "name": fields.String(required=True, description="Admin Name"),
+        "username": fields.String(required=True, description="Admin Username"),
+        "password": fields.String(required=True, description="Admin Password")
+    })
+
+    new_user = api.model("newuser", {
+        "token": fields.String(required=True, description="Join Token"),
+        "username": fields.String(required=True, description="Username"),
+        "password": fields.String(required=True, description="Password"),
+        "name": fields.String(required=True, description="Name")
     })
 
 

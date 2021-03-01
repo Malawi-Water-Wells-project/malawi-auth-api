@@ -15,7 +15,7 @@ class User(db.Model):
     created_on = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
-        return f"<User id='{self.id}' name='{self.name}' tribe id='{self.tribe_id}' role='{self.role}' created on='{self.created_on}'>"
+        return f"<User id='{self.id}' name='{self.name}' tribe_id='{self.tribe_id}' role='{self.role}' created_on='{self.created_on}'>"
 
     @property
     def password(self):
@@ -30,6 +30,8 @@ class User(db.Model):
         ph = PasswordHasher()
         is_valid = ph.verify(self.password_hash, password)
 
+        # TODO: Password revalidation
+
         if is_valid is False:
             return False
 
@@ -38,9 +40,10 @@ class User(db.Model):
     def to_object(self):
         return {
             "id": self.id,
-            "tribe id": self.tribe_id,
-            "public id": self.public_id,
+            "tribe_id": self.tribe_id,
+            "public_id": self.public_id,
             "name": self.name,
             "role": self.role,
-            "created on": self.created_on.isoformat()
+            "username": self.username,
+            "created_on": self.created_on.isoformat()
         }
