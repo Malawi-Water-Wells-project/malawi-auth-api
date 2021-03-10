@@ -6,8 +6,11 @@ from app.main import Application, db
 from os import path
 import csv
 from app.main.models.well import Well
+import dotenv
 
-app = Application(os.getenv("BOILERPLATE_ENV") or "dev")
+dotenv.load_dotenv()
+
+app = Application(os.getenv("ENV") or "dev")
 
 app.flask.app_context().push()
 
