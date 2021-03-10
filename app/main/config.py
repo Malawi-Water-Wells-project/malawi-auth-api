@@ -25,8 +25,11 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    def __init__(self):
+        Config.__init__(self)
+        self.SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
+
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
 
 
 def getConfig(env: str) -> Config:
@@ -34,10 +37,11 @@ def getConfig(env: str) -> Config:
         raise Exception("Invalid Environment")
 
     config = {
-        "dev": DevelopmentConfig,
-        "test": TestingConfig,
-        "prod": ProductionConfig
+        "dev": DevelopmentConfig(),
+        "test": TestingConfig(),
+        "prod": ProductionConfig()
     }
+
     return config[env]
 
 

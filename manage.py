@@ -8,8 +8,6 @@ import csv
 from app.main.models.well import Well
 import dotenv
 
-dotenv.load_dotenv()
-
 app = Application(os.getenv("ENV") or "dev")
 
 app.flask.app_context().push()
