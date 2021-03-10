@@ -1,1 +1,1 @@
-gunicorn --bind 0.0.0.0:5000 app.wsgi:app.flask
+gunicorn --bind 0.0.0.0:5000 app.wsgi:flask
