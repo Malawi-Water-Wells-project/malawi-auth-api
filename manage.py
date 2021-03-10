@@ -24,6 +24,26 @@ def run():
     app.flask.run(host="0.0.0.0")
 
 
+@manager.option('-h', '--host', dest='host', default='0.0.0.0')
+@manager.option('-p', '--port', dest='port', type=int, default=5000)
+@manager.option('-w', '--workers', dest='workers', type=int, default=4)
+def run_prod(host, port, workers):
+    from gunicorn.app.base import Application as GunicornApplication
+
+    class FlaskApplication(GunicornApplication):
+        def init(self, parser, opts, args):
+            return {
+                "bind": f"{host}:{port}",
+                "workers": workers
+            }
+
+        def load(self):
+            return app.flask
+
+    gunicorn_app = FlaskApplication()
+    return gunicorn_app.run()
+
+
 @manager.option("-i", "--input", dest="input_location", help="CSV File Input")
 def load_wells(input_location):
     file_location = os.path.join(os.getcwd(), input_location)
