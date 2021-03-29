@@ -14,7 +14,7 @@ class Application():
         self.flask.config.from_object(self.config)
         db.init_app(self.flask)
 
-        blueprint = Blueprint("auth_api", __name__,  url_prefix="/api/")
+        blueprint = Blueprint("auth_api", __name__,  url_prefix="/")
         self.api = Api(
             blueprint,
             title="Malawi Wells Authentication API",
