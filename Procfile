@@ -1,1 +1,1 @@
-web: python manage.py run_prod
+web: python manage.py run_prod -p 80
