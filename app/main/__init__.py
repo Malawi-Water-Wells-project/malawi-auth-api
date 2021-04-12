@@ -5,6 +5,7 @@ from .models import db
 from app.main.controllers.tribe_controller import api as tribe_namespace
 from app.main.controllers.auth_controller import api as auth_namespace
 from app.main.controllers.well_controller import api as well_namespace
+from flask_cors import CORS
 
 
 class Application():
@@ -12,6 +13,8 @@ class Application():
         self.config = getConfig(config_name)
         self.flask = Flask(__name__)
         self.flask.config.from_object(self.config)
+        CORS(self.flask)
+
         db.init_app(self.flask)
 
         blueprint = Blueprint("auth_api", __name__,  url_prefix="/")

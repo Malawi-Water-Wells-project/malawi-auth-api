@@ -3,10 +3,9 @@ import unittest
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from app.main import Application, db
-from os import path
 import csv
 from app.main.models.well import Well
-import dotenv
+
 
 app = Application(os.getenv("ENV") or "dev")
 

@@ -1,14 +1,15 @@
 from app.main.models.user import User
 from app.main.util.decorator import user_logged_in, user_is_tribe_admin
-from app.main.constants import UserRoles
+from app.main.constants import DistanceConversions, UserRoles
 from app.main.service.user_service import create_new_user, find_user_by_username
 from flask.globals import request
-from app.main.service.tribe_service import check_join_token, create_tribe_join_token, get_tribe_by_id, get_tribe_by_public_id, lookup_join_token, save_new_tribe
+from app.main.service.tribe_service import TribeSearchQuery, check_join_token, create_tribe_join_token, get_tribe_by_id, get_tribe_by_public_id, lookup_join_token, save_new_tribe
 from app.main.util.jwt import generate_jwt_keypair
-from flask_restx import Resource
+from flask_restx import Resource, reqparse
 from app.main.dto import TribeDto
 import base64
 import json
+from math import cos, radians
 
 api = TribeDto.api
 _tribe = TribeDto.tribe
@@ -23,6 +24,23 @@ class GetTribe(Resource):
     def get(self, jwt):
         tribe_id = jwt.get("tribe_id")
         tribe = get_tribe_by_id(tribe_id)
+
+        return {
+            "status": "Success",
+            "tribe": tribe.to_object()
+        }
+
+
+@api.route("/<string:tribe_id>")
+class GetTribeByID(Resource):
+    @api.doc("Retrives a Tribe by its public ID")
+    def get(self, tribe_id):
+        tribe = get_tribe_by_public_id(tribe_id)
+
+        if tribe is None:
+            return {
+                "status": "Failure"
+            }, 404
 
         return {
             "status": "Success",
@@ -140,3 +158,53 @@ class TribeToken(Resource):
             "status": "Success",
             "token": str(base64.encodestring(json.dumps(token).encode()), "utf-8")
         }
+
+
+@api.route("/search")
+class TribeSearch(Resource):
+
+    @api.doc("Searches for Tribes")
+    def get(self):
+        search_query = self._parse_request()
+
+        results = search_query.run_query()
+
+        return {
+            "status": "Success",
+            "count": len(results),
+            "results": [result.to_object() for result in results]
+        }
+
+    def _parse_request(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("type", type=str, required=True,
+                            help="Type is required", location="args")
+        parser.add_argument("query", type=str, location="args")
+        parser.add_argument("latitude", type=float, location="args")
+        parser.add_argument("longitude", type=float, location="args")
+        parser.add_argument("radius", type=int, location="args")
+
+        args = parser.parse_args()
+
+        search_type = args.get("type", None)
+
+        if search_type not in ["name", "location"]:
+            return
+
+        if search_type == "location":
+            return self._parse_location(args)
+
+    def _parse_location(self, args):
+        latitude = args.get("latitude", None)
+        longitude = args.get("longitude", None)
+        radius = args.get("radius", None)
+
+        if not latitude or not longitude:
+            return {}
+
+        return TribeSearchQuery(
+            TribeSearchQuery.LOCATION_TYPE,
+            latitude=latitude,
+            longitude=longitude,
+            radius=radius
+        )
