@@ -5,10 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    def __init__(self):
-        load_dotenv()
-
-    SECRET_KEY = os.getenv("SECRET_KEY", "shhhitsasecret")
+    SECRET_KEY = None
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -26,8 +23,11 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     def __init__(self):
-        Config.__init__(self)
-        self.SQLALCHEMY_DATABASE_URI = os.getenv("POSTGRES_URI")
+        pg_user = os.getenv("POSTGRES_USER")
+        pg_password = os.getenv("POSTGRES_PASSWORD")
+        pg_host = os.getenv("POSTGRES_HOST")
+        pg_db = os.getenv("POSTGRES_DATABASE")
+        self.SQLALCHEMY_DATABASE_URI = f"postgresql://{pg_user}:{pg_password}@{pg_host}/{pg_db}"
 
     DEBUG = False
 
