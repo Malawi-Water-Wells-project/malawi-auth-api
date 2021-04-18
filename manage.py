@@ -29,6 +29,8 @@ def run():
 def run_prod(host, port, workers):
     from gunicorn.app.base import Application as GunicornApplication
 
+    migrate.init_app(app, db)
+
     class FlaskApplication(GunicornApplication):
         def init(self, parser, opts, args):
             return {

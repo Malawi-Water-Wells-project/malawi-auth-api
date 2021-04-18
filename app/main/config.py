@@ -1,11 +1,10 @@
 import os
-from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = None
+    SECRET_KEY = os.environ.get("APP_SECRET_KEY", None)
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -27,7 +26,9 @@ class ProductionConfig(Config):
         pg_password = os.getenv("POSTGRES_PASSWORD")
         pg_host = os.getenv("POSTGRES_HOST")
         pg_db = os.getenv("POSTGRES_DATABASE")
+
         self.SQLALCHEMY_DATABASE_URI = f"postgresql://{pg_user}:{pg_password}@{pg_host}/{pg_db}"
+
 
     DEBUG = False
 
