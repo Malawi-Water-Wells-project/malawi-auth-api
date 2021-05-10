@@ -1,7 +1,7 @@
 from app.main.models.user import User
 from app.main.util.decorator import user_logged_in, user_is_tribe_admin
 from app.main.constants import DistanceConversions, UserRoles
-from app.main.service.user_service import create_new_user, find_user_by_username
+from app.main.service.user_service import create_new_user, find_user_by_username, get_admins_by_tribe
 from flask.globals import request
 from app.main.service.tribe_service import TribeSearchQuery, check_join_token, create_tribe_join_token, get_tribe_by_id, get_tribe_by_public_id, lookup_join_token, save_new_tribe
 from app.main.util.jwt import generate_jwt_keypair
@@ -45,6 +45,26 @@ class GetTribeByID(Resource):
         return {
             "status": "Success",
             "tribe": tribe.to_object()
+        }
+
+
+@api.route("/<string:tribe_id>/admins")
+class GetAdminsForTribe(Resource):
+    @api.doc("Gets all Tribe Admins for a tribe")
+    def get(self, tribe_id):
+        tribe = get_tribe_by_public_id(tribe_id)
+
+        if not tribe:
+            return {
+                "status": "Failure",
+                "message": "Tribe not found"
+            }, 404
+
+        admins = get_admins_by_tribe(tribe.id)
+
+        return {
+            "status": "Success",
+            "admins": [x.to_object() for x in admins]
         }
 
 

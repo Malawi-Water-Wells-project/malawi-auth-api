@@ -1,5 +1,6 @@
 from typing import Union
 from app.main.models.user import User
+from app.main.constants import UserRoles
 from uuid import uuid4
 from datetime import datetime
 from .. import db
@@ -34,3 +35,7 @@ def find_user_by_id(id) -> Union[User, None]:
 
 def find_user_by_username(username) -> Union[User, None]:
     return User.query.filter_by(username=username).first()
+
+
+def get_admins_by_tribe(tribe_id):
+    return User.query.filter_by(tribe_id=tribe_id, role=UserRoles.TRIBE_ADMIN).all()
