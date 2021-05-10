@@ -1,5 +1,4 @@
 from app.main import Application
-from flask_script import Command, Option
 
 
 app = Application("prod")

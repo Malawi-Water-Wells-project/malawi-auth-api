@@ -31,7 +31,7 @@ class Login(Resource):
 
         password_valid = user.verify_password(request.json.get("password"))
 
-        if password_valid is False:
+        if not password_valid:
             return {
                 "status": "Failure",
                 "message": "Login Failed"
@@ -57,6 +57,9 @@ class Authorize(Resource):
     @api.response(401, "Invalid Refresh Token")
     def post(self):
         token = request.headers.get("Authorization")
+
+        if token is None:
+            return {}, 400
 
         error, payload = validate_refresh_token(token)
 

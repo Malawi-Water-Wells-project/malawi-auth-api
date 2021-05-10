@@ -4,14 +4,16 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("APP_SECRET_KEY", None)
+    SECRET_KEY = os.environ.get("APP_SECRET_KEY", "Shhhhh")
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, '../../tmp/devdb_main.db')}"
+    SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:postgres@localhost:5432/postgres"
+    CORS_ALLOW_HEADERS = ["authorization", "content-type"]
+    CORS_ORIGINS = ["admin.local.africawater.org"]
 
 
 class TestingConfig(Config):
@@ -28,7 +30,6 @@ class ProductionConfig(Config):
         pg_db = os.getenv("POSTGRES_DATABASE")
 
         self.SQLALCHEMY_DATABASE_URI = f"postgresql://{pg_user}:{pg_password}@{pg_host}/{pg_db}"
-
 
     DEBUG = False
 
