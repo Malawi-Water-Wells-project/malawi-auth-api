@@ -142,3 +142,4 @@ cython_debug/
 tmp/
 tmp/*.db
 tmp/*.sqlite
+*.pid

@@ -1,7 +1,19 @@
-from . import db
+"""
+Created: 08/02/2021
+SQLAlchemy Model for a Refresh Token
+"""
+from app.main.models import db
 
 
 class RefreshToken(db.Model):
+    """
+    SQLAlchemy Model for a Refresh Token
+    id: int             # Primary Key, autoincrement
+    token: str          # The encoded JWT
+    user_id: int        # The associated user ID
+    expires_at: Date    # Expiry date of the token
+    revoked: bool       # Revoked status of the token (True=revoked, False=valid)
+    """
     __tablename__ = "Refresh_Tokens"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -11,4 +23,7 @@ class RefreshToken(db.Model):
     revoked = db.Column(db.Boolean)
 
     def __repr__(self):
-        return f"<RefreshToken token='{self.token}' user_id='{self.user_id}' expires_at='{self.expires_at}'"
+        return "<RefreshToken " + \
+            f"token='{self.token}' " + \
+            f"user_id='{self.user_id}' " + \
+            f"expires_at='{self.expires_at}'"

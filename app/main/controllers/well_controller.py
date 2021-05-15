@@ -1,27 +1,50 @@
-from flask import request
-from app.main.service.well_service import get_all_wells, BulkWellUploader
-from flask_restx.resource import Resource
+"""
+Created 01/03/2021
+API Resources for /wells
+"""
+
 from app.main.dto import WellDto
+from app.main.service.well_service import BulkWellUploader, get_all_wells
 from app.main.util.decorator import user_logged_in
+from flask import request
+from flask_restx.resource import Resource
+
 api = WellDto.api
 
 
 @api.route("/")
 class Wells(Resource):
+    """ API Resource for /wells/ """
+
     @api.doc("Retrieves Wells")
+    @api.response(200, "An array of Well objects")
     @user_logged_in
-    def get(self, jwt):
-        wells = [well.to_object() for well in get_all_wells()]
+    def get(self, _jwt):
+        """
+        GET /wells/
+
+        Retrieves all wells that the user is allowed to see.
+        """
+        wells = [well.dictionary for well in get_all_wells()]
 
         return wells
 
 
 @api.route("/bulk")
 class BulkUploadWells(Resource):
-    @api.doc("Bulk Upload of Wells")
-    def post(self):
-        raw_csv = request.files['file'].read()
+    """ API Resource for /wells/bulk/ """
 
+    @api.doc("Bulk Upload of Wells")
+    @api.response(200, "Status: Success - All Wells in the uploaded document have been added")
+    @api.response(200, "Status: Mixed - Some Wells in the uploaded document could not be added")
+    @api.response(400, "Status: Failure - No Wells were added")
+    def post(self):
+        """
+        POST /wells/bulk
+        Handler for the bulk CSV Well upload
+        """
+
+        raw_csv = request.files['file'].read()
         uploader = BulkWellUploader()
 
         has_parsed = uploader.parse(raw_csv)

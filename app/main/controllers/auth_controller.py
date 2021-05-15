@@ -1,14 +1,17 @@
+"""
+Created 05/02/2021
+API Resources for /auth
+"""
 
-
-from app.main.service.token_service import get_refresh_token
-import jwt
-from app.main.util.decorator import user_logged_in
-from app.main.util.jwt import generate_access_token, generate_jwt_keypair, validate_refresh_token
-from flask.globals import request
-from app.main.service.user_service import find_user_by_id, find_user_by_username
-from flask_restx.resource import Resource
 from app.main.dto import AuthDto
-
+from app.main.service.token_service import get_refresh_token
+from app.main.service.user_service import (find_user_by_id,
+                                           find_user_by_username)
+from app.main.util.decorator import user_logged_in
+from app.main.util.jwt import (generate_access_token, generate_jwt_keypair,
+                               validate_refresh_token)
+from flask.globals import request
+from flask_restx.resource import Resource
 
 api = AuthDto.api
 _credentials = AuthDto.credentials
@@ -16,11 +19,17 @@ _credentials = AuthDto.credentials
 
 @api.route("/login")
 class Login(Resource):
+    """ Resouce for /login """
     @api.doc("Login")
     @api.response(200, "Logged in successfully")
     @api.response(401, "Login Failed")
     @api.expect(_credentials, validate=True)
     def post(self):
+        """
+        POST /login
+        Expected: AuthDto.credentials
+        Verifies user details and generates new tokens
+        """
         user = find_user_by_username(request.json.get("username"))
 
         if user is None:
@@ -42,7 +51,7 @@ class Login(Resource):
 
         return {
             "status": "Success",
-            "user": user.to_object(),
+            "user": user.dictionary,
             "tokens": {
                 "access": access_token,
                 "refresh": refresh_token
@@ -118,5 +127,5 @@ class User(Resource):
 
         return {
             "status": "Success",
-            "user": user.to_object()
+            "user": user.dictionary
         }

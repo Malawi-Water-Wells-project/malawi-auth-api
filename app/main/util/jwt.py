@@ -1,10 +1,19 @@
-from app.main.service.token_service import store_refresh_token
-import jwt
-from ..config import secret_key
+"""
+Created 08/02/2021
+JWT Creation Utils
+"""
+
 from datetime import datetime, timedelta
+from typing import Tuple, Union
+
+from app.main.config import secret_key
+from app.main.service.token_service import store_refresh_token
+
+import jwt
 
 
-def generate_access_token(user_id, tribe_id, role):
+def generate_access_token(user_id: int, tribe_id: str, role: str) -> str:
+    """ Generate an access token that expires in 15 minutes """
     base_claims = {
         "user_id": user_id,
         "tribe_id": tribe_id,
@@ -24,7 +33,8 @@ def generate_access_token(user_id, tribe_id, role):
     return access_token
 
 
-def generate_jwt_keypair(user_id, tribe_id, role):
+def generate_jwt_keypair(user_id: int, tribe_id: str, role: str) -> Tuple[str, str]:
+    """ Generates and stores a JWT keypair (access+refresh) """
     base_claims = {
         "user_id": user_id,
         "tribe_id": tribe_id,
@@ -56,7 +66,8 @@ def generate_jwt_keypair(user_id, tribe_id, role):
     return access_token, refresh_token
 
 
-def validate_access_token(token: str):
+def validate_access_token(token: str) -> Union[Tuple[None, dict], Tuple[str, None]]:
+    """ Validates an access token """
     if "Bearer" in token:
         token = token.split("Bearer").pop().strip()
 
@@ -71,7 +82,8 @@ def validate_access_token(token: str):
         return "Invalid Access Token", None
 
 
-def validate_refresh_token(token):
+def validate_refresh_token(token: str) -> Union[Tuple[None, dict], Tuple[str, None]]:
+    """ Validates a refresh token """
     if "Bearer" in token:
         token = token.split("Bearer").pop().strip()
 

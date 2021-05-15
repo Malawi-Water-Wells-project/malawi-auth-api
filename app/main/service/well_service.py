@@ -1,14 +1,22 @@
-from app.main.models.well import Well
+"""
+Created 01/03/2021
+DB Access Service for Wells
+"""
 from csv import DictReader
-import io
-from .. import db
+from io import StringIO
+from typing import List
+
+from app.main.models import db
+from app.main.models.well import Well
 
 
-def get_all_wells():
+def get_all_wells() -> List[Well]:
+    """ Returns every Well in the database - CAUTION! """
     return Well.query.all()
 
 
 class BulkWellUploaderKeys:
+    """ Required Keys in each row of the bulk CSV upload """
     WELL_ID = "WP_ID"
     COUNTRY = "Country"
     DISTRICT = "District"
@@ -19,6 +27,9 @@ class BulkWellUploaderKeys:
 
 
 class BulkWellUploader:
+    """
+    Handler for the Bulk Upload of Wells
+    """
 
     EXPECTED_KEYS = (
         BulkWellUploaderKeys.WELL_ID,
@@ -33,41 +44,54 @@ class BulkWellUploader:
     def __init__(self):
         self.successful_rows = []
         self.failed_rows = []
+        self.reader = None
 
-    def parse(self, raw_data):
+    def parse(self, raw_data) -> bool:
+        """ Attempt to parse the incoming raw data into an IO stream """
         try:
-            io_stream = io.StringIO(raw_data.decode())
+            io_stream = StringIO(raw_data.decode())
             self.reader = DictReader(io_stream)
             return True
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-except
             print(exc)
             return False
 
-    def upload(self):
+    def upload(self) -> None:
+        """ Creates a Well for each row in the uploaded CSV """
         for row in self.reader:
-            try:
-                is_valid = self._validate_row(row)
-                if not is_valid:
-                    self.failed_rows.append(row)
-                    continue
-
-                well = Well(
-                    well_id=row.get(BulkWellUploaderKeys.WELL_ID, None),
-                    country=row.get(BulkWellUploaderKeys.COUNTRY, None),
-                    district=row.get(BulkWellUploaderKeys.DISTRICT, None),
-                    sub_district=row.get(
-                        BulkWellUploaderKeys.SUBDISTRICT, None),
-                    village=row.get(BulkWellUploaderKeys.VILLAGE, None),
-                    latitude=row.get(BulkWellUploaderKeys.LATITUDE, None),
-                    longitude=row.get(BulkWellUploaderKeys.LONGITUDE, None)
-                )
-                db.session.add(well)
-                db.session.commit()
+            success = self._upload_row(row)
+            if success:
                 self.successful_rows.append(row)
-            except:
+            else:
                 self.failed_rows.append(row)
 
-    def _validate_row(self, row):
+    def _upload_row(self, row: dict) -> bool:
+        """ Attempt to validate and upload a single Well to the DB """
+        is_valid = self._validate_row(row)
+        if not is_valid:
+            return False
+
+        try:
+            well = Well(
+                well_id=row.get(BulkWellUploaderKeys.WELL_ID, None),
+                country=row.get(BulkWellUploaderKeys.COUNTRY, None),
+                district=row.get(BulkWellUploaderKeys.DISTRICT, None),
+                sub_district=row.get(BulkWellUploaderKeys.SUBDISTRICT, None),
+                village=row.get(BulkWellUploaderKeys.VILLAGE, None),
+                latitude=row.get(BulkWellUploaderKeys.LATITUDE, None),
+                longitude=row.get(BulkWellUploaderKeys.LONGITUDE, None)
+            )
+            db.session.add(well)
+            db.session.commit()
+            return True
+        except Exception as exc:  # pylint: disable=broad-except
+            print(exc)
+            return False
+
+    def _validate_row(self, row: dict) -> bool:
+        """
+        Ensure that all required keys exist in the row
+        """
         all_keys = list(row.keys())
         is_valid = True
 
@@ -77,10 +101,3 @@ class BulkWellUploader:
                 break
 
         return is_valid
-
-
-def validate_bulk_upload(raw_csv):
-    rows = DictReader(io.StringIO(raw_csv.decode("utf-8")))
-
-    for row in rows:
-        is_valid = validate_bulk_row()

@@ -1,6 +1,11 @@
+"""
+Created 05/03/2021
+__init__.py for setting up the application and the DB tables
+"""
+import os
+
 from app.main import Application
 from app.main.models import db
-import os
 
 
 def setup_test_environment():
