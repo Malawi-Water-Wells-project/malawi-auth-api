@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+
+
 import csv
 import os
 import unittest
@@ -8,11 +11,6 @@ import inquirer
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from inquirer.questions import Password
-
-from app.main import Application, db
-from app.main.constants import UserRoles
-from app.main.models.user import User
-from app.main.models.well import Well
 
 app = Application(os.getenv("ENV") or "dev")
 
