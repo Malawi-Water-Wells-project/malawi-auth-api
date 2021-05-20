@@ -143,3 +143,4 @@ tmp/
 tmp/*.db
 tmp/*.sqlite
 *.pid
+.vscode/settings.json

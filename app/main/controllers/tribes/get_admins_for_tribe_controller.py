@@ -5,7 +5,7 @@ GetAdminsForTribe API Resource
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
 from app.main.service.tribe_service import save_new_tribe
-from app.main.util.decorator import AuthDecorators
+from app.main.util.decorators.auth import AuthDecorators
 from flask import request
 
 api = TribeDto.api
