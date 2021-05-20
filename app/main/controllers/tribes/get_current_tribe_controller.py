@@ -5,7 +5,7 @@ GetCurrentTribe API Resource
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
 from app.main.service.tribe_service import get_tribe_by_id
-from app.main.util.decorator import AuthDecorators
+from app.main.util.decorators.auth import AuthDecorators
 
 api = TribeDto.api
 

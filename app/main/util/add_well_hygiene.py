@@ -1,10 +1,17 @@
-from app.main.models.well_hygiene import WellHygiene
-from csv import DictReader
+"""
+Created 17/05/2021
+Bulk Well Hygiene Uploader
+"""
 import io
-from .. import db
+from csv import DictReader
+
+from app.main.models import db
+from app.main.models.well_hygiene import WellHygiene
+
 
 def get_all_wells_hygiene():
     return WellHygiene.query.all()
+
 
 class BulkWellHygieneUploaderKeys:
     village = "village"
@@ -34,9 +41,10 @@ class BulkWellHygieneUploaderKeys:
     ammonia_wet = "ammonia_wet"
     arsonic_dry = "arsonic_dry"
     arsonic_wet = "arsonic_wet"
-    nitrateno2_dry ="nitrateno2_dry"
-    nitrate_no2_wet ="nitrate_no2_wet"
+    nitrateno2_dry = "nitrateno2_dry"
+    nitrate_no2_wet = "nitrate_no2_wet"
     timestamp = "timestamp"
+
 
 class BulkWellHygieneUploader:
 
@@ -62,12 +70,12 @@ class BulkWellHygieneUploader:
         BulkWellHygieneUploaderKeys.sulphate_wet,
         BulkWellHygieneUploaderKeys.hardness_dry,
         BulkWellHygieneUploaderKeys.hardness_wet,
-        BulkWellHygieneUploaderKeys.nitrate_dry ,
-        BulkWellHygieneUploaderKeys.nitrate_wet ,
-        BulkWellHygieneUploaderKeys.ammonia_dry ,
-        BulkWellHygieneUploaderKeys.ammonia_wet ,
-        BulkWellHygieneUploaderKeys.arsonic_dry ,
-        BulkWellHygieneUploaderKeys.arsonic_wet ,
+        BulkWellHygieneUploaderKeys.nitrate_dry,
+        BulkWellHygieneUploaderKeys.nitrate_wet,
+        BulkWellHygieneUploaderKeys.ammonia_dry,
+        BulkWellHygieneUploaderKeys.ammonia_wet,
+        BulkWellHygieneUploaderKeys.arsonic_dry,
+        BulkWellHygieneUploaderKeys.arsonic_wet,
         BulkWellHygieneUploaderKeys.nitrateno2_dry,
         BulkWellHygieneUploaderKeys.nitrate_no2_wet,
         BulkWellHygieneUploaderKeys.timestamp,
@@ -100,31 +108,52 @@ class BulkWellHygieneUploader:
                     tc_wet=row.get(BulkWellHygieneUploaderKeys.tc_wet, None),
                     fc_dry=row.get(BulkWellHygieneUploaderKeys.fc_dry, None),
                     fc_wet=row.get(BulkWellHygieneUploaderKeys.fc_wet, None),
-                    turbidity_dry=row.get(BulkWellHygieneUploaderKeys.turbidity_dry, None),
-                    turbidity_wet=row.get(BulkWellHygieneUploaderKeys.turbidity_wet, None),
+                    turbidity_dry=row.get(
+                        BulkWellHygieneUploaderKeys.turbidity_dry, None),
+                    turbidity_wet=row.get(
+                        BulkWellHygieneUploaderKeys.turbidity_wet, None),
                     tds_dry=row.get(BulkWellHygieneUploaderKeys.tds_dry, None),
                     tds_wet=row.get(BulkWellHygieneUploaderKeys.tds_wet, None),
-                    electrical_conductivity_dry=row.get(BulkWellHygieneUploaderKeys.electrical_conductivity_dry, None),
-                    electrical_conductivity_wet=row.get(BulkWellHygieneUploaderKeys.electrical_conductivity_wet, None),
+                    electrical_conductivity_dry=row.get(
+                        BulkWellHygieneUploaderKeys.electrical_conductivity_dry, None),
+                    electrical_conductivity_wet=row.get(
+                        BulkWellHygieneUploaderKeys.electrical_conductivity_wet, None),
                     ph_dry=row.get(BulkWellHygieneUploaderKeys.ph_dry, None),
                     ph_wet=row.get(BulkWellHygieneUploaderKeys.ph_wet, None),
-                    temperature_dry=row.get(BulkWellHygieneUploaderKeys.temperature_dry, None),
-                    temperature_wet=row.get(BulkWellHygieneUploaderKeys.temperature_wet, None),
-                    fluoride_dry=row.get(BulkWellHygieneUploaderKeys.fluoride_dry, None),
-                    fluoride_wet=row.get(BulkWellHygieneUploaderKeys.fluoride_wet, None),
-                    sulphate_dry=row.get(BulkWellHygieneUploaderKeys.sulphate_dry, None),
-                    sulphate_wet=row.get(BulkWellHygieneUploaderKeys.sulphate_wet, None),
-                    hardness_dry=row.get(BulkWellHygieneUploaderKeys.hardness_dry, None),
-                    hardness_wet=row.get(BulkWellHygieneUploaderKeys.hardness_wet, None),
-                    nitrate_dry=row.get(BulkWellHygieneUploaderKeys.nitrate_dry, None),
-                    nitrate_wet=row.get(BulkWellHygieneUploaderKeys.nitrate_wet, None),
-                    ammonia_dry=row.get(BulkWellHygieneUploaderKeys.ammonia_dry, None),
-                    ammonia_wet=row.get(BulkWellHygieneUploaderKeys.ammonia_wet, None),
-                    arsonic_dry=row.get(BulkWellHygieneUploaderKeys.arsonic_dry, None),
-                    arsonic_wet=row.get(BulkWellHygieneUploaderKeys.arsonic_wet, None),
-                    nitrateno2_dry=row.get(BulkWellHygieneUploaderKeys.nitrateno2_dry, None),
-                    nitrate_no2_wet=row.get(BulkWellHygieneUploaderKeys.nitrate_no2_wet, None),
-                    timestamp=row.get(BulkWellHygieneUploaderKeys.timestamp, None),
+                    temperature_dry=row.get(
+                        BulkWellHygieneUploaderKeys.temperature_dry, None),
+                    temperature_wet=row.get(
+                        BulkWellHygieneUploaderKeys.temperature_wet, None),
+                    fluoride_dry=row.get(
+                        BulkWellHygieneUploaderKeys.fluoride_dry, None),
+                    fluoride_wet=row.get(
+                        BulkWellHygieneUploaderKeys.fluoride_wet, None),
+                    sulphate_dry=row.get(
+                        BulkWellHygieneUploaderKeys.sulphate_dry, None),
+                    sulphate_wet=row.get(
+                        BulkWellHygieneUploaderKeys.sulphate_wet, None),
+                    hardness_dry=row.get(
+                        BulkWellHygieneUploaderKeys.hardness_dry, None),
+                    hardness_wet=row.get(
+                        BulkWellHygieneUploaderKeys.hardness_wet, None),
+                    nitrate_dry=row.get(
+                        BulkWellHygieneUploaderKeys.nitrate_dry, None),
+                    nitrate_wet=row.get(
+                        BulkWellHygieneUploaderKeys.nitrate_wet, None),
+                    ammonia_dry=row.get(
+                        BulkWellHygieneUploaderKeys.ammonia_dry, None),
+                    ammonia_wet=row.get(
+                        BulkWellHygieneUploaderKeys.ammonia_wet, None),
+                    arsonic_dry=row.get(
+                        BulkWellHygieneUploaderKeys.arsonic_dry, None),
+                    arsonic_wet=row.get(
+                        BulkWellHygieneUploaderKeys.arsonic_wet, None),
+                    nitrateno2_dry=row.get(
+                        BulkWellHygieneUploaderKeys.nitrateno2_dry, None),
+                    nitrate_no2_wet=row.get(
+                        BulkWellHygieneUploaderKeys.nitrate_no2_wet, None),
+                    timestamp=row.get(
+                        BulkWellHygieneUploaderKeys.timestamp, None),
                 )
 
                 db.session.add(well_hygiene)

@@ -6,7 +6,7 @@ from app.main.constants import UserRoles
 from app.main.controllers.resource import Resource
 from app.main.dto import UserDto
 from app.main.service.user_service import create_new_user
-from app.main.util.decorator import AuthDecorators
+from app.main.util.decorators.auth import AuthDecorators
 from app.main.util.decorators.middleware import validate
 from app.main.util.validation.requests import CreateUserValidator
 from flask import request

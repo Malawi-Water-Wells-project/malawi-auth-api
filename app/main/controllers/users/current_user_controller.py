@@ -5,7 +5,7 @@ CurrentUser API Resource
 from app.main.controllers.resource import Resource
 from app.main.dto import UserDto
 from app.main.service.user_service import find_user_by_id
-from app.main.util.decorator import AuthDecorators
+from app.main.util.decorators.auth import AuthDecorators
 
 api = UserDto.api
 
