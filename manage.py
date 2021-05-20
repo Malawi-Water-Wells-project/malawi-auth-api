@@ -77,6 +77,7 @@ def load_wells(input_location):
 
 @manager.command
 def create_user():
+    """ Management Script for creating users """
     print("=== Create User ===")
     questions = [
         inquirer.Text("name", message="Full Name"),

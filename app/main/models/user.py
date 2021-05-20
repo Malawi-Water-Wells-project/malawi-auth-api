@@ -33,6 +33,7 @@ class User(db.Model):
     def __repr__(self):
         return "<User " + \
             f"id='{self.id}' " +\
+            f"public_id='{self.public_id}' " + \
             f"name='{self.name}' " + \
             f"tribe_id='{self.tribe_id}' " + \
             f"role='{self.role}' " + \
@@ -74,3 +75,8 @@ class User(db.Model):
             "username": self.username,
             "created_on": self.created_on.isoformat()  # pylint: disable=no-member
         }
+
+    def delete(self):
+        """ Deletes the User from the Database """
+        db.session.delete(self)
+        db.session.commit()

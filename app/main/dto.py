@@ -38,3 +38,8 @@ class AuthDto:
 class WellDto:
     """ Data Transfer Object for the Wells Controller """
     api = Namespace("well", description="Well Operations")
+
+
+class UserDto:
+    """ Data Transfer Object for the Users Controller """
+    api = Namespace("user", description="User Operations")

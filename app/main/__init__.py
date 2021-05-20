@@ -25,7 +25,8 @@ class Application():
         self.api = Api(
             blueprint,
             title="Malawi Wells Authentication API",
-            version="1.0"
+            version="1.0",
+            validate=False
         )
 
         bind_controllers(self.api)

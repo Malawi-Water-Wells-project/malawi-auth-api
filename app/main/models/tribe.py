@@ -2,7 +2,11 @@
 Created 05/02/2021
 SQLAlchemy Model for a Tribe
 """
+from typing import List
+
+from app.main.constants import UserRoles
 from app.main.models import db
+from app.main.models.user import User
 
 
 class Tribe(db.Model):
@@ -45,3 +49,7 @@ class Tribe(db.Model):
             "name": self.name,
             "created_on": self.created_on.isoformat()  # pylint: disable=no-member
         }
+
+    def get_admins(self) -> List[User]:
+        """ Retrives all Tribe Admins associated with this tribe """
+        return User.query.filter_by(tribe_id=self.id, role=UserRoles.TRIBE_ADMIN).all()

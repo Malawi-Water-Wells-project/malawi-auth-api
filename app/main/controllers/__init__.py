@@ -3,14 +3,17 @@ Created 05/02/2021
 __init__.py for the controllers
 """
 
-from app.main.controllers.auth_controller import api as auth_ns
-from app.main.controllers.tribe_controller import api as tribe_ns
-from app.main.controllers.well_controller import api as well_ns
+import app.main.dto as dto
+from app.main.controllers.auth import *
+from app.main.controllers.tribes import *
+from app.main.controllers.users import *
+from app.main.controllers.wells import *
 from flask_restx import Api
 
 
-def bind_controllers(api: Api) -> None:
+def bind_controllers(api_instance: Api) -> None:
     """ Binds each controller to its own namespace """
-    api.add_namespace(tribe_ns, "/tribes")
-    api.add_namespace(auth_ns, "/auth")
-    api.add_namespace(well_ns, "/wells")
+    api_instance.add_namespace(dto.TribeDto.api, "/tribes")
+    api_instance.add_namespace(dto.AuthDto.api, "/auth")
+    api_instance.add_namespace(dto.WellDto.api, "/wells")
+    api_instance.add_namespace(dto.UserDto.api, "/users")
