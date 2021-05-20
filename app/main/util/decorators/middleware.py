@@ -27,6 +27,5 @@ def validate(Validator: AbstractRequestValidator):
                 )
 
             return wrapped_func(*args, **kwargs, **validator.lookup_cache, body=request.json)
-
         return wrapper
     return decorator

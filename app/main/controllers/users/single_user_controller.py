@@ -8,7 +8,7 @@ from app.main.dto import UserDto
 from app.main.models.user import User
 from app.main.service.tribe_service import get_tribe_by_public_id
 from app.main.service.user_service import find_user_by_public_id, update_user
-from app.main.util.decorator import AuthDecorators
+from app.main.util.decorators.auth import AuthDecorators
 from app.main.util.decorators.middleware import validate
 from app.main.util.validation.requests import PatchUserValidator
 from flask import request
