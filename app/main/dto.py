@@ -1,7 +1,12 @@
+"""
+Created 05/02/2021
+API Data Transfer Objects
+"""
 from flask_restx import Namespace, fields
 
 
 class TribeDto:
+    """ Data Transfer Object for the Tribes Controller """
     api = Namespace("tribe", description="Tribe Operations")
     tribe = api.model("tribe", {
         "name": fields.String(required=True, description="Tribe Name"),
@@ -13,7 +18,6 @@ class TribeDto:
         "username": fields.String(required=True, description="Admin Username"),
         "password": fields.String(required=True, description="Admin Password")
     })
-
     new_user = api.model("newuser", {
         "token": fields.String(required=True, description="Join Token"),
         "username": fields.String(required=True, description="Username"),
@@ -23,6 +27,7 @@ class TribeDto:
 
 
 class AuthDto:
+    """ Data Transfer Object for the Auth Controller """
     api = Namespace("auth", description="Authentication Operations")
     credentials = api.model("credentials", {
         "username": fields.String(required=True, description="Username"),
@@ -31,4 +36,10 @@ class AuthDto:
 
 
 class WellDto:
+    """ Data Transfer Object for the Wells Controller """
     api = Namespace("well", description="Well Operations")
+
+
+class UserDto:
+    """ Data Transfer Object for the Users Controller """
+    api = Namespace("user", description="User Operations")

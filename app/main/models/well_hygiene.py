@@ -1,4 +1,10 @@
-from .. import db
+"""
+Created 20/05/2021
+SQLAlchemy Model for Well Hygiene
+"""
+from app.main.models import db
+
+
 class WellHygiene(db.Model):
     __tablename__ = "well_hygiene"
 
@@ -37,7 +43,9 @@ class WellHygiene(db.Model):
     def __repr__(self):
         return f"WellHygiene id='{self.id}' village='{self.village}' tc_dry='{self.tc_dry}' tc_wet='{self.tc_wet}' turbidity_dry='{self.turbidity_dry}' turbidity_wet='{self.turbidity_wet}' tds_dry='{self.tds_dry}' tds_wet='{self.tds_wet}' electrical_conductivity_dry='{self.electrical_conductivity_dry}' electrical_conductivity_wet='{self.electrical_conductivity_wet}' ph_dry='{self.ph_dry}' ph_wet='{self.ph_wet}' temperature_dry='{self.temperature_dry}' temperature_wet='{self.temperature_wet}' fluoride_dry='{self.fluoride_dry}' fluoride_wet='{self.fluoride_wet}' sulphate_dry='{self.sulphate_dry}' sulphate_wet='{self.sulphate_wet}' hardness_dry='{self.hardness_dry}' hardness_wet='{self.hardness_wet}' nitrate_dry='{self.nitrate_dry}' nitrate_wet='{self.nitrate_wet}' ammonia_dry='{self.ammonia_dry}' ammonia_wet='{self.ammonia_wet}' arsonic_dry='{self.arsonic_dry} arsonic_wet='{self.arsonic_wet}' nitrateno2_dry='{self.nitrateno2_dry}' nitrate_no2_wet='{self.nitrate_no2_wet}'timestamp='{self.timestamp}'"
 
-    def to_object(self):
+    @property
+    def dictionary(self):
+        """ A representation of the well hygiene as a dictionary """
         return {
             "id": self.id,
             "village": self.village,

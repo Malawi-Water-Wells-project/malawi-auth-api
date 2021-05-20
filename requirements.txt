@@ -2,6 +2,7 @@ alembic==1.5.4
 aniso8601==8.1.1
 appdirs==1.4.3
 argon2-cffi==20.1.0
+astroid==2.5.6
 attrs==20.3.0
 autopep8==1.5.5
 CacheControl==0.12.6
@@ -23,12 +24,15 @@ gunicorn==20.0.4
 html5lib==1.0.1
 idna==2.8
 ipaddr==2.2.0
+isort==5.8.0
 itsdangerous==1.1.0
 Jinja2==2.11.3
 jsonschema==3.2.0
+lazy-object-proxy==1.6.0
 lockfile==0.12.2
 Mako==1.1.4
 MarkupSafe==1.1.1
+mccabe==0.6.1
 msgpack==0.6.2
 numpy==1.20.2
 packaging==20.3
@@ -39,6 +43,10 @@ psycopg2-binary==2.8.6
 pycodestyle==2.6.0
 pycparser==2.20
 PyJWT==2.0.1
+pylint==2.8.2
+pylint-flask==0.6
+pylint-flask-sqlalchemy==0.2.0
+pylint-plugin-utils==0.6
 pyparsing==2.4.6
 pyrsistent==0.17.3
 python-dateutil==2.8.1
@@ -55,3 +63,4 @@ toml==0.10.2
 urllib3==1.25.8
 webencodings==0.5.1
 Werkzeug==1.0.1
+wrapt==1.12.1

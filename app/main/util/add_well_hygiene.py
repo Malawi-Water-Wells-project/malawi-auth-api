@@ -3,7 +3,7 @@ from csv import DictReader
 import io
 from .. import db
 
-def get_all_well_hygiene():
+def get_all_wells_hygiene():
     return WellHygiene.query.all()
 
 class BulkWellHygieneUploaderKeys:
