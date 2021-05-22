@@ -9,6 +9,7 @@ from app.main.util.decorators.auth import AuthDecorators
 
 api = WellDto.api
 
+
 @api.route("/hygiene")
 class GetWellHygiene(Resource):
     """ API Resource for /wells/hygiene """
@@ -19,6 +20,7 @@ class GetWellHygiene(Resource):
         wells = [well.dictionary for well in get_all_wells_hygiene()]
 
         return wells
+
 
 # def upload_well_hygiene():
 
