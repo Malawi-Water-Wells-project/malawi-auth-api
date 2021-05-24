@@ -11,7 +11,6 @@ from flask import request
 api = TribeDto.api
 _tribe = TribeDto.tribe
 
-
 class GetAdminsForTribe(Resource):
     """ Resource for /tribes/create """
 

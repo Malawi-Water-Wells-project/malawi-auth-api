@@ -9,7 +9,7 @@ from app.main.models import db
 
 
 def setup_test_environment():
-    app = Application(os.environ.get("ENV", "dev"))
+    app = Application(os.environ.get("ENV", "prod"))
 
     with app.flask.app_context():
         # db.drop_all()

@@ -29,6 +29,7 @@ class Tribe(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     created_on = db.Column(db.DateTime, nullable=False)
     users = db.relationship("User")
+    associated_wells =db.relationship("AssociatedWells")
 
     def __repr__(self):
         return "<Tribe " + \
