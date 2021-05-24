@@ -9,7 +9,7 @@ from flask import request
 
 api = WellDto.api
 
-
+@api.route("/bulk")
 class BulkUploadWells(Resource):
     """ API Resource for /wells/bulk """
 
