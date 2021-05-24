@@ -1,5 +1,7 @@
-from dotenv import load_dotenv
-
+"""
+Created 05/02/2021
+Management Script
+"""
 
 import csv
 import os
@@ -10,7 +12,9 @@ from uuid import uuid4
 import inquirer
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from inquirer.questions import Password
+
+from app.main import Application
+from app.main.models import db
 
 app = Application(os.getenv("ENV") or "dev")
 

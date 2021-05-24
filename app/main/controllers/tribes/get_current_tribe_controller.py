@@ -21,6 +21,7 @@ class GetCurrentTribe(Resource):
         GET /tribes/current
         Gets the Tribe for the currently logged in user
         """
+
         tribe_id = jwt.get("tribe_id")
 
         if not tribe_id:
