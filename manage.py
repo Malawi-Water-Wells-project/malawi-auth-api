@@ -15,6 +15,8 @@ from flask_script import Manager
 from app.main.constants import UserRoles
 from app.main import Application
 from app.main.models import db
+from app.main.models.user import User
+from app.main.models.well import Well
 
 app = Application(os.getenv("ENV") or "dev")
 
