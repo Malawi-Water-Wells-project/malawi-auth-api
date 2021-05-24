@@ -1,3 +1,8 @@
+"""
+Created 05/02/2021
+Management Script
+"""
+
 import csv
 import os
 import unittest
@@ -7,12 +12,9 @@ from uuid import uuid4
 import inquirer
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from inquirer.questions import Password
 
-from app.main import Application, db
-from app.main.constants import UserRoles
-from app.main.models.user import User
-from app.main.models.well import Well
+from app.main import Application
+from app.main.models import db
 
 app = Application(os.getenv("ENV") or "dev")
 

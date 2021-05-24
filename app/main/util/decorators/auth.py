@@ -9,11 +9,13 @@ from app.main.controllers.resource import Resource
 from app.main.service.tribe_service import get_tribe_by_public_id
 from app.main.service.user_service import find_user_by_public_id
 from app.main.util.jwt import validate_access_token
+from app.main.util.logger import AppLogger
 from flask.globals import request
 
 
 class AuthDecorators:
     """ Decorators for various auth control flows """
+    logger = AppLogger()
 
     @classmethod
     def ensure_logged_in(cls, wrapped_func):
@@ -24,15 +26,17 @@ class AuthDecorators:
         @wraps(wrapped_func)
         def wrapper(*args, **kwargs):
             token = request.headers.get("Authorization")
-
             if token is None:
+                cls.logger.log("AUTH001")
                 return Resource.format_failure(401, "Not Authorized")
 
             error, payload = validate_access_token(token)
 
             if error is not None:
+                cls.logger.log("AUTH002")
                 return Resource.format_failure(401, error)
 
+            cls.logger.log("AUTH003")
             return wrapped_func(*args, **kwargs, jwt=payload)
 
         return wrapper

@@ -5,7 +5,6 @@ Application Config
 
 import os
 
-from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -49,7 +48,6 @@ class ProductionConfig(Config):
 
 def get_config_for_env(env: str) -> Config:
     """ Returns the correct config for each environment """
-    load_dotenv()
     if env not in ["dev", "test", "prod"]:
         raise Exception("Invalid Environment")
 
