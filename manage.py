@@ -12,7 +12,7 @@ from uuid import uuid4
 import inquirer
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-
+from app.main.constants import UserRoles
 from app.main import Application
 from app.main.models import db
 
