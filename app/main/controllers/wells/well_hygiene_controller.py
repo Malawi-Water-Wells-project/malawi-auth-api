@@ -4,7 +4,7 @@ GetWellHygiene API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import WellDto
-from app.main.util.add_well_hygiene import get_all_wells_hygiene
+
 from app.main.util.decorators.auth import AuthDecorators
 
 api = WellDto.api
@@ -17,9 +17,9 @@ class GetWellHygiene(Resource):
     @api.doc("Retrieve Well Hygiene")
     @AuthDecorators.ensure_is_admin
     def get(self, **_):
-        wells = [well.dictionary for well in get_all_wells_hygiene()]
+        # wells = [well.dictionary for well in get_all_wells_hygiene()]
 
-        return wells
+        return {}
 
 
 # def upload_well_hygiene():
