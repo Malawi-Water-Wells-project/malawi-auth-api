@@ -52,7 +52,6 @@ class Tribe(db.Model, AbstractModel):
         )
         return tribe.save()
 
-
     @property
     def dictionary(self) -> dict:
         """ A representation of the user as a dictionary """

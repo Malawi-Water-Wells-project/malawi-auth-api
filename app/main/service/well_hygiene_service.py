@@ -18,7 +18,7 @@ class WellHygieneService(AbstractRedisService):
     @classmethod
     def record_hygiene(cls, well_id: str, well_hygiene: WellHygiene):
         """ Saves Well Hygiene into Redis and stores the value in Postgres """
-        response = cls.redisClient.set(cls._format_key(
+        response = cls.redisClient().set(cls._format_key(
             well_id), json.dumps(well_hygiene.dictionary))
         print(response)
 

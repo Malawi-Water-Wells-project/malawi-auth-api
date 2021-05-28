@@ -31,4 +31,4 @@ class GetCurrentTribe(Resource):
         if not tribe:
             return self.format_failure(404, "Tribe not found")
 
-        return self.format_success(200, {tribe: tribe.dictionary})
+        return self.format_success(200, {"tribe": tribe.dictionary})
