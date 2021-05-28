@@ -2,10 +2,11 @@
 Created 01/03/2021
 SQLAlchemy Model for a Well
 """
+from app.main.models.abstract_model import AbstractModel
 from app.main.models import db
 
 
-class Well(db.Model):
+class Well(db.Model, AbstractModel):
     """
     SQLAlchemy Model for a Well
     id: int             # Primary Key, autoincrement

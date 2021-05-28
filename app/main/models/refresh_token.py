@@ -2,10 +2,11 @@
 Created: 08/02/2021
 SQLAlchemy Model for a Refresh Token
 """
+from app.main.models.abstract_model import AbstractModel
 from app.main.models import db
 
 
-class RefreshToken(db.Model):
+class RefreshToken(db.Model, AbstractModel):
     """
     SQLAlchemy Model for a Refresh Token
     id: int             # Primary Key, autoincrement
@@ -26,4 +27,4 @@ class RefreshToken(db.Model):
         return "<RefreshToken " + \
             f"token='{self.token}' " + \
             f"user_id='{self.user_id}' " + \
-            f"expires_at='{self.expires_at}'"
+            f"expires_at='{self.expires_at}'>"

@@ -2,17 +2,25 @@
 Created 01/03/2021
 DB Access Service for Wells
 """
+from app.main.service.abstract_service import AbstractService
 from csv import DictReader
 from io import StringIO
-from typing import List
+from typing import List, Union
 
 from app.main.models import db
 from app.main.models.well import Well
 
 
-def get_all_wells() -> List[Well]:
-    """ Returns every Well in the database - CAUTION! """
-    return Well.query.all()
+class WellService(AbstractService):
+    MODEL = Well
+
+    @classmethod
+    def get_all_wells(cls) -> List[Well]:
+        return cls.model().query.all()
+
+    @classmethod
+    def get_by_well_id(cls, well_id: str) -> Union[Well, None]:
+        return cls.filter(well_id=well_id).first()
 
 
 class BulkWellUploaderKeys:

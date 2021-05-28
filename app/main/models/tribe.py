@@ -2,6 +2,9 @@
 Created 05/02/2021
 SQLAlchemy Model for a Tribe
 """
+from datetime import datetime
+from uuid import uuid4
+from app.main.models.abstract_model import AbstractModel
 from typing import List
 
 from app.main.constants import UserRoles
@@ -9,7 +12,7 @@ from app.main.models import db
 from app.main.models.user import User
 
 
-class Tribe(db.Model):
+class Tribe(db.Model, AbstractModel):
     """
     SQLAlchemy Model for a Tribe
     id: int             # Primary Key, autoincrement
@@ -39,8 +42,19 @@ class Tribe(db.Model):
             f"latitude='{self.latitude}' " + \
             f"longitude='{self.longitude}'>"
 
+    @classmethod
+    def create(cls, **kwargs):
+        """ Creates a Tribe and saves into the db """
+        tribe = Tribe(
+            public_id=str(uuid4()),
+            created_on=datetime.utcnow(),
+            **kwargs
+        )
+        return tribe.save()
+
+
     @property
-    def dictionary(self):
+    def dictionary(self) -> dict:
         """ A representation of the user as a dictionary """
         return {
             "id": self.id,

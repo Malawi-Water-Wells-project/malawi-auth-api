@@ -65,6 +65,7 @@ class Resource(FlaskResource):
             return response, code
         except Exception as exc:  # pylint: disable=broad-except
             self._log_failure(exc)
+            raise exc
             return self.format_failure(500, "Internal Server Error")
 
     @property

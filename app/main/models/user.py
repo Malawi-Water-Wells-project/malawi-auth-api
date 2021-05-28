@@ -2,11 +2,14 @@
 Created 05/02/2021
 SQLAlchemy Model for a User
 """
+from uuid import uuid4
+from app.main.models.abstract_model import AbstractModel
 from app.main.models import db
 from argon2 import PasswordHasher
+from datetime import datetime
 
 
-class User(db.Model):
+class User(db.Model, AbstractModel):
     """
     SQLAlchemy model for a User
     id: int             # Primary Key, autoincrement
@@ -63,8 +66,29 @@ class User(db.Model):
         # TODO: Password revalidation
         return is_valid
 
+    @staticmethod
+    def create(**kwargs):
+        """
+        Creates a new user in the DB. Expected data: "name", "username", "password"
+        """
+        password = kwargs.pop("password")
+        username = kwargs.pop("username")
+        name = kwargs.pop("name")
+
+        user = User(
+            tribe_id=kwargs.get("tribe_id"),
+            public_id=str(uuid4()),
+            username=username,
+            name=name,
+            role=kwargs.get("role"),
+            created_on=datetime.utcnow(),
+        )
+        user.password = password
+        user.save()
+        return user
+
     @property
-    def dictionary(self):
+    def dictionary(self) -> dict:
         """ A representation of the user as a dictionary """
         return {
             "id": self.id,
@@ -75,8 +99,3 @@ class User(db.Model):
             "username": self.username,
             "created_on": self.created_on.isoformat()  # pylint: disable=no-member
         }
-
-    def delete(self):
-        """ Deletes the User from the Database """
-        db.session.delete(self)
-        db.session.commit()

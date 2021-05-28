@@ -4,7 +4,7 @@ Login API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import AuthDto
-from app.main.service.user_service import find_user_by_username
+from app.main.service.user_service import UserService
 from app.main.util.jwt import generate_jwt_keypair
 from flask import request
 
@@ -24,7 +24,7 @@ class Login(Resource):
         POST /login
         Expected: AuthDto.credentials
         """
-        user = find_user_by_username(request.json.get("username"))
+        user = UserService.get_by_username(request.json.get("username"))
 
         if user is None:
             return self.format_failure(401, "Login Failed")

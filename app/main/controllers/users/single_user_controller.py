@@ -6,8 +6,8 @@ from app.main.constants import UserRoles
 from app.main.controllers.resource import Resource
 from app.main.dto import UserDto
 from app.main.models.user import User
-from app.main.service.tribe_service import get_tribe_by_public_id
-from app.main.service.user_service import find_user_by_public_id, update_user
+from app.main.service.tribe_service import TribeService
+from app.main.service.user_service import UserService
 from app.main.util.decorators.auth import AuthDecorators
 from app.main.util.decorators.middleware import validate
 from app.main.util.validation.requests import PatchUserValidator
@@ -25,7 +25,7 @@ class UserResource(Resource):
         GET /user/<user_id>
         Returns a User if found
         """
-        user = find_user_by_public_id(user_id)
+        user = UserService.get_by_public_id(user_id)
 
         if user is None:
             return self.format_failure(404, "User not found")
@@ -44,7 +44,7 @@ class UserResource(Resource):
 
         tribe_id = request.json.get("tribe_id")
         if tribe_id is not None:
-            tribe = get_tribe_by_public_id(tribe_id)
+            tribe = TribeService.get_by_public_id(tribe_id)
             if tribe is None:
                 return self.format_failure(404, "Tribe not found")
             user.tribe_id = tribe_id
@@ -55,7 +55,8 @@ class UserResource(Resource):
                 return self.format_failure(401, "You are not authorized to perform this action")
             user.role = role
 
-        update_user(user)
+        user.save()
+
         return self.format_success(200, {"user": user.dictionary})
 
     def delete(self, user_id: str):
@@ -63,7 +64,7 @@ class UserResource(Resource):
         DELETE /user/<user_id>
         Deletes a User
         """
-        user = find_user_by_public_id(user_id)
+        user = UserService.get_by_public_id(user_id)
 
         if user is None:
             return self.format_failure(404, "User not found")

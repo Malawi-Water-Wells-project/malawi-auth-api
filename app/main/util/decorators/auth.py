@@ -6,8 +6,8 @@ from functools import wraps
 
 from app.main.constants import UserRoles
 from app.main.controllers.resource import Resource
-from app.main.service.tribe_service import get_tribe_by_public_id
-from app.main.service.user_service import find_user_by_public_id
+from app.main.service.tribe_service import TribeService
+from app.main.service.user_service import UserService
 from app.main.util.jwt import validate_access_token
 from app.main.util.logger import AppLogger
 from flask.globals import request
@@ -72,13 +72,16 @@ class AuthDecorators:
             tribe_id = kwargs.get("tribe_id")
             jwt = kwargs.get("jwt")
 
-            tribe = get_tribe_by_public_id(tribe_id)
+            tribe = TribeService.get_by_public_id(tribe_id)
 
             if tribe is None:
                 return Resource.format_failure(404, "Tribe not found")
 
             role = jwt.get("role")
             token_tribe_id = jwt.get("tribe_id")
+
+            if role and role == UserRoles.ADMIN:
+                return wrapped_func(*args, **kwargs, tribe=tribe)
 
             if role and role == UserRoles.TRIBE_ADMIN and token_tribe_id == tribe.id:
                 return wrapped_func(*args, **kwargs, tribe=tribe)
@@ -96,7 +99,7 @@ class AuthDecorators:
         @cls.ensure_logged_in
         def wrapper(*args, **kwargs):
             user_id = kwargs.get("user_id")
-            user = find_user_by_public_id(user_id)
+            user = UserService.get_by_public_id(user_id)
             jwt = kwargs.get("jwt")
 
             if user is None:

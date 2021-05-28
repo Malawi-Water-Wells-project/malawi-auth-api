@@ -7,12 +7,13 @@ import json
 
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
-from app.main.service.tribe_service import check_join_token
+from app.main.service.tribe_service import TribeService
 from flask.globals import request
 
 api = TribeDto.api
 
 
+@api.route("/check-token")
 class CheckToken(Resource):
     """ Resource for /tribes/check-token/ """
 
@@ -29,7 +30,7 @@ class CheckToken(Resource):
         decoded_token = json.loads(base64.b64decode(
             token.encode("ascii")).decode("ascii"))
 
-        is_valid = check_join_token(decoded_token)
+        is_valid = TribeService.check_join_token(decoded_token)
 
         if not is_valid:
             return self.format_failure(400, "Invalid Token")

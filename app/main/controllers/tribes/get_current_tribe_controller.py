@@ -4,7 +4,7 @@ GetCurrentTribe API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
-from app.main.service.tribe_service import get_tribe_by_id
+from app.main.service.tribe_service import TribeService
 from app.main.util.decorators.auth import AuthDecorators
 
 api = TribeDto.api
@@ -27,7 +27,7 @@ class GetCurrentTribe(Resource):
         if not tribe_id:
             return self.format_failure(400, "This user is not associated with a tribe")
 
-        tribe = get_tribe_by_id(tribe_id)
+        tribe = TribeService.get_by_id(tribe_id)
         if not tribe:
             return self.format_failure(404, "Tribe not found")
 

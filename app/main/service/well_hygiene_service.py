@@ -2,11 +2,28 @@
 Created 20/05/2021
 DB Access Service for Well Hygiene
 """
+from app.main.service.abstract_service import AbstractRedisService, AbstractService
 import io
 from csv import DictReader
 
 from app.main.models import db
 from app.main.models.well_hygiene import WellHygiene
+import json
+
+
+class WellHygieneService(AbstractRedisService):
+    REDIS_DB = 1
+
+    @classmethod
+    def record_hygiene(cls, well_id: str, well_hygiene: WellHygiene):
+        """ Saves Well Hygiene into Redis and stores the value in Postgres """
+        response = cls.redisClient.set(cls._format_key(
+            well_id), json.dumps(well_hygiene.dictionary))
+        print(response)
+
+    @classmethod
+    def _format_key(cls, key: str) -> str:
+        return f"wellhygiene:{key}"
 
 
 class BulkWellHygieneUploaderKeys:

@@ -5,7 +5,7 @@ Authorize API Resource
 from app.main.controllers.resource import Resource
 from app.main.dto import AuthDto
 from app.main.service.token_service import get_refresh_token
-from app.main.service.user_service import find_user_by_id
+from app.main.service.user_service import UserService
 from app.main.util.jwt import generate_access_token, validate_refresh_token
 from flask import request
 
@@ -48,7 +48,7 @@ class Authorize(Resource):
         if existing_token.revoked:
             return self.format_failure(401, "Token Revoked")
 
-        user = find_user_by_id(int(existing_token.user_id))
+        user = UserService.get_by_id(int(existing_token.user_id))
         if user is None:
             return self.format_failure(404, "User associated with token does not exist")
 

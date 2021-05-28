@@ -4,7 +4,7 @@ GetWells API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import WellDto
-from app.main.service.well_service import get_all_wells
+from app.main.service.well_service import WellService
 from app.main.util.decorators.auth import AuthDecorators
 
 api = WellDto.api
@@ -23,6 +23,6 @@ class Wells(Resource):
 
         Retrieves all wells that the user is allowed to see.
         """
-        wells = [well.dictionary for well in get_all_wells()]
+        wells = [well.dictionary for well in WellService.get_all_wells()]
 
         return self.format_success(200, {"wells": wells})

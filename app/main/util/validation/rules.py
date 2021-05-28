@@ -54,3 +54,11 @@ class CommonRules:
         "empty": False,
         "allowed": [UserRoles.ADMIN, UserRoles.TRIBE_ADMIN, UserRoles.USER]
     })
+    FLOAT = Rule({
+        "type": "number",
+        "empty": False
+    })
+    STRING = Rule({
+        "type": "string",
+        "empty": False
+    })

@@ -4,7 +4,7 @@ CurrentUser API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import UserDto
-from app.main.service.user_service import find_user_by_id
+from app.main.service.user_service import UserService
 from app.main.util.decorators.auth import AuthDecorators
 
 api = UserDto.api
@@ -22,7 +22,7 @@ class CurrentUser(Resource):
         """
         user_id = jwt.get("user_id")
 
-        user = find_user_by_id(user_id)
+        user = UserService.get_by_id(user_id)
         if user is None:
             return self.format_failure(500, "User Not Found")
 

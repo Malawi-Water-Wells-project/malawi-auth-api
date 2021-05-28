@@ -4,83 +4,63 @@ DB Access Service for Tribes
 """
 
 import json
-from datetime import datetime
 from math import cos, radians, sqrt
 from typing import List, Union
 from uuid import uuid4
-
-import redis
 from app.main.constants import DistanceConversions
 from app.main.models import db
 from app.main.models.tribe import Tribe
 
-# TODO: Proper Redis Config
-r = redis.Redis(host="localhost", port=6379, db=0)
+
+from app.main.service.abstract_service import AbstractRedisService
 
 
-def save_new_tribe(data: dict) -> Tribe:
-    """
-    Creates a new Tribe in the DB
-    """
-    new_tribe = Tribe(
-        public_id=str(uuid4()),
-        name=data.get("name"),
-        latitude=data.get("latitude"),
-        longitude=data.get("longitude"),
-        created_on=datetime.utcnow()
-    )
-    db.session.add(new_tribe)
-    db.session.commit()
+class TribeService(AbstractRedisService):
+    #pylint: disable=no-member
+    MODEL = Tribe
 
-    return new_tribe
+    @classmethod
+    def get_by_public_id(cls, public_id) -> Union[Tribe, None]:
+        return cls.filter(public_id=public_id).first()
 
+    @classmethod
+    def generate_join_token(cls, tribe: Tribe):
+        """ Creates a token that can be used to join a Tribe """
+        token = str(uuid4())
+        token_data = {
+            "token": token,
+            "tribe_id": tribe.public_id,
+            "tribe_name": tribe.name
+        }
 
-def get_tribe_by_public_id(tribe_id) -> Union[Tribe, None]:
-    """ Queries for Tribes by Public ID """
-    return Tribe.query.filter_by(public_id=tribe_id).first()
+        success = cls.redisClient().setex(
+            f"jointoken:{token}", 15 * 60, json.dumps(token_data))
 
+        print(success)
 
-def get_tribe_by_id(tribe_id) -> Union[Tribe, None]:
-    """ Queries for Tribes by ID """
-    return Tribe.query.filter_by(id=tribe_id).first()
+        if success:
+            return token_data
 
+        raise Exception("Failed to set jointoken")
 
-def create_tribe_join_token(tribe_id: str, tribe_name: str) -> dict:
-    """ Creates a token that can be used to join a Tribe """
-    token = str(uuid4())
+    @classmethod
+    def check_join_token(cls, token: dict):
+        """ Validates a Join Token """
 
-    token_data = {
-        "token": token,
-        "tribe_id": tribe_id,
-        "tribe_name": tribe_name
-    }
+        if "token" in token:
+            data = cls.redisClient().get(
+                f"jointoken:{token.get('token', None)}")
+            return True
 
-    success = r.setex(f"jointoken:{token}", 15 * 60, json.dumps(token_data))
+        raise Exception("Oops!")
 
-    if success:
-        return token_data
-
-    raise Exception("Failed to set jointoken")
-
-
-def check_join_token(token) -> bool:
-    """ Validates a Join Token """
-    if "token" in token:
-        data = r.get(f"jointoken:{token.get('token')}")
-        print(data)
-        return True
-
-    raise Exception("Oops!")
-
-
-def lookup_join_token(token):
-    """ Queries Redis for a Join Token """
-    response = r.get(f"jointoken:{token}")
-
-    if response is None:
-        return None
-
-    return json.loads(response)
+    @classmethod
+    def lookup_join_token(cls, token: str) -> dict:
+        """ Queries Redis for a Join Token """
+        response = cls.redisClient().get(f"jointoken:{token}")
+        if response is None:
+            return None
+        return json.loads(response)
 
 
 class TribeSearchQuery:

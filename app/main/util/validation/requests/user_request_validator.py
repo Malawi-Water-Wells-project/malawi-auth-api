@@ -2,9 +2,8 @@
 Created: 20/05/2021
 User Request Validator
 """
-from app.main.service.tribe_service import (get_tribe_by_public_id,
-                                            lookup_join_token)
-from app.main.service.user_service import find_user_by_username
+from app.main.service.tribe_service import TribeService
+from app.main.service.user_service import UserService
 from app.main.util.validation.rules import CommonRules
 from flask.globals import request
 
@@ -24,7 +23,8 @@ class CreateUserValidator(AbstractRequestValidator):
         """
         Ensure that the username is unique and the tribe exists if provided
         """
-        existing_user = find_user_by_username(request.json.get("username"))
+        existing_user = UserService.get_by_username(
+            request.json.get("username"))
 
         if existing_user is not None:
             self.add_error("username", "Username already exists")
@@ -34,7 +34,7 @@ class CreateUserValidator(AbstractRequestValidator):
         if tribe_id is None:
             return
 
-        tribe = get_tribe_by_public_id(tribe_id)
+        tribe = TribeService.get_by_public_id(tribe_id)
         if tribe is None:
             self.add_error("tribe_id", "Tribe not found")
 
@@ -55,12 +55,12 @@ class ClaimTokenValidator(AbstractRequestValidator):
         "name": CommonRules.NAME.required,
         "username": CommonRules.USERNAME.required,
         "password": CommonRules.PASSWORD.required,
-        "token": CommonRules.TOKEN.required
+        "token": CommonRules.STRING.required
     }
 
     def postvalidation(self):
         """ Check that the token is valid and the tribe exists """
-        token = lookup_join_token(request.json.get("token"))
+        token = TribeService.lookup_join_token(request.json.get("token"))
 
         if token is None:
             self.add_error("token", "Token does not exist")
@@ -70,6 +70,9 @@ class ClaimTokenValidator(AbstractRequestValidator):
         if not tribe_id:
             self.add_error("token", "Invalid Token")
 
-        tribe = get_tribe_by_public_id(tribe_id)
+        tribe = TribeService.get_by_public_id(tribe_id)
+
         if tribe is None:
             self.add_error("token", "Invalid Token")
+
+        self.lookup_cache["tribe"] = tribe

@@ -4,7 +4,7 @@ GetTribeByID API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
-from app.main.service.tribe_service import get_tribe_by_public_id
+from app.main.service.tribe_service import TribeService
 
 api = TribeDto.api
 
@@ -24,7 +24,7 @@ class GetTribeByID(Resource):
         Lookup a Tribe by Public ID
         """
 
-        tribe = get_tribe_by_public_id(tribe_id)
+        tribe = TribeService.get_by_public_id(tribe_id)
 
         if tribe is None:
             return self.format_failure(404, "Tribe Not Found")

@@ -4,7 +4,7 @@ CreateTribe API Resource
 """
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
-from app.main.service.tribe_service import save_new_tribe
+from app.main.models.tribe import Tribe
 from flask import request
 
 api = TribeDto.api
@@ -18,11 +18,11 @@ class CreateTribe(Resource):
     @api.doc("Create a new Tribe")
     @api.response(201, "Tribe created successfully")
     @api.expect(_tribe, validate=True)
-    def post(self):
+    def post(self, **_):
         """
         POST /tribes/create
         Creates a new Tribe
         """
 
-        new_tribe = save_new_tribe(request.json)
+        new_tribe = Tribe.create(**request.json)
         return self.format_success(201, {"tribe": new_tribe.dictionary})

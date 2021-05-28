@@ -10,6 +10,7 @@ from flask_restx import reqparse
 api = TribeDto.api
 
 
+@api.route("/search")
 class TribeSearch(Resource):
     """ Resource for /tribes/search """
 
