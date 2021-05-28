@@ -2,6 +2,7 @@
 Created 20/05/2021
 DB Access Service for Well Hygiene
 """
+from typing import List
 from app.main.service.abstract_service import AbstractRedisService, AbstractService
 import io
 from csv import DictReader
@@ -24,6 +25,31 @@ class WellHygieneService(AbstractRedisService):
     @classmethod
     def _format_key(cls, key: str) -> str:
         return f"wellhygiene:{key}"
+
+    @classmethod
+    def update_well_hygiene_score(cls, well_id: str, score: float):
+        """ Updates the Well Hygiene score in Redis """
+        return cls.redisClient().set(cls._format_score_key(well_id), str(score))
+
+    @classmethod
+    def get_well_hygiene_score(cls, well_id: str):
+        """ Gets a Well Hygiene score for a Well """
+        score = cls.redisClient().get(cls._format_score_key(well_id))
+        if score is None:
+            return -1
+        return float(score)
+
+    @classmethod
+    def enrich_wells_with_scores(cls, wells: List[dict]):
+        """ """
+        for well in wells:
+            well_id = well.get("well_id")
+            well["hygiene_score"] = cls.get_well_hygiene_score(well_id)
+
+    @staticmethod
+    def _format_score_key(well_id: str):
+        """ Formats a well ID into the redis score key """
+        return f"wellhygienescore:{well_id}"
 
 
 class BulkWellHygieneUploaderKeys:

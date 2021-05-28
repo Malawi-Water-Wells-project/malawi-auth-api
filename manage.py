@@ -3,12 +3,14 @@ Created 05/02/2021
 Management Script
 """
 
+from app.main.service.well_hygiene_service import WellHygieneService
+from app.main.service.well_service import WellService
 import csv
 import os
 import unittest
 from datetime import datetime
 from uuid import uuid4
-
+import random
 import inquirer
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
@@ -131,6 +133,17 @@ def create_user():
     db.session.commit()
 
     print(f"Successfully added user: {user}")
+
+
+@manager.command
+def fake_well_hygiene():
+    """ Fakes Well Hygiene scores """
+    wells = WellService.get_all_wells()
+
+    for well in wells:
+        score = random.random()
+        WellHygieneService.update_well_hygiene_score(well.well_id, score)
+        print(f"Updated Score for Well: {well.well_id} => {score}")
 
 
 @manager.command

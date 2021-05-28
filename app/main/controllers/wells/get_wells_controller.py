@@ -2,6 +2,7 @@
 Created 19/05/2021
 GetWells API Resource
 """
+from app.main.service.well_hygiene_service import WellHygieneService
 from app.main.controllers.resource import Resource
 from app.main.dto import WellDto
 from app.main.service.well_service import WellService
@@ -24,5 +25,7 @@ class Wells(Resource):
         Retrieves all wells that the user is allowed to see.
         """
         wells = [well.dictionary for well in WellService.get_all_wells()]
+
+        WellHygieneService.enrich_wells_with_scores(wells)
 
         return self.format_success(200, {"wells": wells})
