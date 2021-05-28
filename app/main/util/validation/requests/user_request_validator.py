@@ -16,7 +16,8 @@ class CreateUserValidator(AbstractRequestValidator):
         "name":  CommonRules.NAME.required,
         "username": CommonRules.USERNAME.required,
         "password": CommonRules.PASSWORD.required,
-        "tribe_id": CommonRules.TRIBE_ID
+        "tribe_id": CommonRules.TRIBE_ID,
+        "role": CommonRules.ROLE,
     }
 
     def postvalidation(self):
@@ -32,11 +33,13 @@ class CreateUserValidator(AbstractRequestValidator):
 
         tribe_id = request.json.get("tribe_id")
         if tribe_id is None:
+            self.lookup_cache.add("tribe", None)
             return
 
         tribe = TribeService.get_by_public_id(tribe_id)
         if tribe is None:
             self.add_error("tribe_id", "Tribe not found")
+        self.lookup_cache.add("tribe", tribe)
 
 
 class PatchUserValidator(AbstractRequestValidator):

@@ -18,7 +18,7 @@ class LookupCache(dict):
 
     def add(self, key: str, value):
         """ Adds an entry to the cache """
-        self.update({[key]: value})
+        self.update({key: value})
 
 
 class AbstractRequestValidator(metaclass=ABCMeta):

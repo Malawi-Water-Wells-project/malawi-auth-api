@@ -22,14 +22,19 @@ class CreateUser(Resource):
     @api.doc("Create a new User")
     @AuthDecorators.ensure_is_admin
     @validate(CreateUserValidator)
-    def post(self):
+    def post(self, tribe, **_):
         """
         POST /users/create
         """
+        role = request.json.get("role", UserRoles.USER)
+        tribe_id = tribe.id if tribe is not None else None
+
         user = User.create(
-            **request.json,
-            tribe_id=request.json.get("tribe_id", None),
-            role=UserRoles.USER
+            username=request.json["username"],
+            password=request.json["password"],
+            name=request.json["name"],
+            role=role,
+            tribe_id=tribe_id
         )
 
         return self.format_success(200, {"user": user.dictionary})
