@@ -2,15 +2,16 @@
 Created 01/03/2021
 SQLAlchemy Model for a Well
 """
-from app.main.models.abstract_model import AbstractModel
-from app.main.models import db
+from uuid import uuid4
+from pynamodb.attributes import UnicodeAttribute
+from pynamodb.models import Model
 
 
-class Well(db.Model, AbstractModel):
+class Well(Model):
     """
-    SQLAlchemy Model for a Well
-    id: int             # Primary Key, autoincrement
-    well_id: str        # Well's ID, i.e. AAA01
+    DynamoDB Model for a Well
+    well_id: str        # UUID4, Hash Key, Public ID
+    code: str           # Well's Code, i.e. AAA01
     country: str        # Well's Country
     district: str       # Well's District
     sub_district: str   # Well's Sub-District
@@ -18,39 +19,21 @@ class Well(db.Model, AbstractModel):
     latitude: float     # Latitude of the well
     longitude: float    # Longitude of the well
     """
+    class Meta:
+        """ Metadata for Well Table """
+        table_name = "dynamodb-well"
+        host = "http://localhost:8000"
+        read_capacity_units = 1
+        write_capacity_units = 1
 
-    __tablename__ = "Wells"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    well_id = db.Column(db.String(10), unique=True, index=True, nullable=False)
-    country = db.Column(db.String(100), nullable=False)
-    district = db.Column(db.String(100), nullable=False)
-    sub_district = db.Column(db.String(100), nullable=False)
-    village = db.Column(db.String(100), nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-
-    def __repr__(self):
-        return "<Well " + \
-            f"id='{self.id}' " + \
-            f"well_id='{self.well_id}' " + \
-            f"country='{self.country}' " + \
-            f"district='{self.district}' " + \
-            f"sub_district='{self.sub_district}' " + \
-            f"village='{self.village}' " + \
-            f"latitude='{self.latitude}' " + \
-            f"longitude='{self.longitude}'>"
-
-    @property
-    def dictionary(self):
-        """ A representation of the well as a dictionary """
-        return {
-            "id": self.id,
-            "well_id": self.well_id,
-            "country": self.country,
-            "district": self.district,
-            "sub_district": self.sub_district,
-            "village": self.village,
-            "latitude": self.latitude,
-            "longitude": self.longitude
-        }
+    well_id: str = UnicodeAttribute(
+        hash_key=True,
+        default=uuid4
+    )
+    code: str = UnicodeAttribute(range_key=True, null=False)
+    country: str = UnicodeAttribute(null=False)
+    district: str = UnicodeAttribute(null=False)
+    sub_district: str = UnicodeAttribute(null=False)
+    village: str = UnicodeAttribute(null=False)
+    latitude: str = UnicodeAttribute(null=False)
+    longitude: str = UnicodeAttribute(null=False)

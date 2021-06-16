@@ -1,0 +1,3 @@
+{ "user_id": "f82101dd-afe6-4d91-9a62-8967a67eb54f", "tribe_id": null, "name": "Integration Test Admin", "username": "inttest-admin", "password": "inttestpassword", "role": "admin" }
+{ "user_id": "1a41889c-2a2a-4df7-a94a-d8a23fb8573d", "tribe_id": "e035ac48-872c-4f78-a092-cbfb34f888ec", "name": "Integration Test TribeAdmin", "username": "inttest-tribeadmin", "password": "inttestpassword", "role": "tribeadmin" }
+{ "user_id": "5d6f3457-7461-4532-9a8f-c5ed473ed513", "tribe_id": "e035ac48-872c-4f78-a092-cbfb34f888ec", "name": "Integration Test User", "username": "inttest-user", "password": "inttestpassword", "role": "user" }

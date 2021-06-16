@@ -24,7 +24,7 @@ class GetTribeByID(Resource):
         Lookup a Tribe by Public ID
         """
 
-        tribe = TribeService.get_by_public_id(tribe_id)
+        tribe = TribeService.get_by_id(tribe_id)
 
         if tribe is None:
             return self.format_failure(404, "Tribe Not Found")

@@ -2,6 +2,7 @@
 Created: 20/05/2021
 User Request Validator
 """
+
 from app.main.service.tribe_service import TribeService
 from app.main.service.user_service import UserService
 from app.main.util.validation.rules import CommonRules
@@ -36,7 +37,7 @@ class CreateUserValidator(AbstractRequestValidator):
             self.lookup_cache.add("tribe", None)
             return
 
-        tribe = TribeService.get_by_public_id(tribe_id)
+        tribe = TribeService.get_by_id(tribe_id)
         if tribe is None:
             self.add_error("tribe_id", "Tribe not found")
         self.lookup_cache.add("tribe", tribe)

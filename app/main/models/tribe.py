@@ -1,69 +1,66 @@
 """
 Created 05/02/2021
-SQLAlchemy Model for a Tribe
+DynamoDB Model for a Tribe
 """
+
 from datetime import datetime
+from pynamodb.models import Model
+from pynamodb.attributes import (
+    NumberAttribute,
+    UnicodeAttribute,
+    UTCDateTimeAttribute,
+    UnicodeSetAttribute
+)
 from uuid import uuid4
-from app.main.models.abstract_model import AbstractModel
-from typing import List
-
-from app.main.constants import UserRoles
-from app.main.models import db
-from app.main.models.user import User
+from typing import List, Set
 
 
-class Tribe(db.Model, AbstractModel):
+class Tribe(Model):
     """
-    SQLAlchemy Model for a Tribe
-    id: int             # Primary Key, autoincrement
-    public_id: str      # Tribe's "Public ID" to be used in requests
-    name: str           # Tribe's name
-    latitude: float     # Tribe's latitude
-    longitude: float    # Tribe's longitude
-    created_on: Date    # Creation timestamp
-    users: Relationship(User) # One-to-Many Relationship with Users
-    """
-    __tablename__ = "Tribe"
+    DynamoDB Model for a Tribe
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    public_id = db.Column(db.String(100), unique=True, index=True)
-    name = db.Column(db.String, nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-    created_on = db.Column(db.DateTime, nullable=False)
-    users = db.relationship("User")
-    # associated_wells =db.relationship("AssociatedWells")
+    tribe_id: str           # UUID4, Hash Key, Public ID
+    name: str               # Tribe's name
+    latitude: float         # Tribe's latitude
+    longitude: float        # Tribe's longitude
+    created_on: datetime    # Creation timestamp
+    users: List[str]        # List of User IDs
+    wells: List[str]        # List of Well IDs
+    """
+
+    class Meta:
+        """ Metadata for Tribe Table """
+        table_name = "dynamodb-tribe"
+        host = "http://localhost:8000"
+        read_capacity_units = 1
+        write_capacity_units = 1
+
+    tribe_id: str = UnicodeAttribute(
+        hash_key=True,
+        default=lambda: str(uuid4())
+    )
+    name: str = UnicodeAttribute(null=False)
+    latitude: float = NumberAttribute(null=False)
+    longitude: float = NumberAttribute(null=False)
+    created_on: datetime = UTCDateTimeAttribute(default=datetime.now)
+    users: Set[str] = UnicodeSetAttribute(default=[])
+    wells: Set[str] = UnicodeSetAttribute(default=[])
 
     def __repr__(self):
         return "<Tribe " + \
-            f"id='{self.id}' " + \
-            f"public_id='{self.public_id}' " + \
+            f"tribe_id='{self.tribe_id}' " + \
             f"name='{self.name}' " + \
-            f"latitude='{self.latitude}' " + \
-            f"longitude='{self.longitude}'>"
-
-    @classmethod
-    def create(cls, **kwargs):
-        """ Creates a Tribe and saves into the db """
-        tribe = Tribe(
-            public_id=str(uuid4()),
-            created_on=datetime.utcnow(),
-            **kwargs
-        )
-        return tribe.save()
+            f"latitude={self.latitude} " + \
+            f"longitude={self.longitude} " + \
+            f"created_on='{self.created_on}' " + \
+            f"users={self.users} " + \
+            f"wells={self.wells}>"
 
     @property
-    def dictionary(self) -> dict:
-        """ A representation of the user as a dictionary """
-        return {
-            "id": self.id,
-            "public_id": self.public_id,
-            "latitude": self.latitude,
-            "longitude": self.longitude,
-            "name": self.name,
-            "created_on": self.created_on.isoformat()  # pylint: disable=no-member
-        }
-
-    def get_admins(self) -> List[User]:
-        """ Retrives all Tribe Admins associated with this tribe """
-        return User.query.filter_by(tribe_id=self.id, role=UserRoles.TRIBE_ADMIN).all()
+    def dictionary(self):
+        """ A representation of the Tribe as a dict """
+        values = self.attribute_values.copy()
+        values["created_on"] = values["created_on"].isoformat()
+        values["users"] = list(values["users"])
+        values["wells"] = list(values["wells"])
+        return values

@@ -2,9 +2,9 @@
 Created 16/05/2021
 Login API Resource
 """
+from app.main.models.user import User
 from app.main.controllers.resource import Resource
 from app.main.dto import AuthDto
-from app.main.service.user_service import UserService
 from app.main.util.jwt import generate_jwt_keypair
 from flask import request
 
@@ -24,22 +24,24 @@ class Login(Resource):
         POST /login
         Expected: AuthDto.credentials
         """
-        user = UserService.get_by_username(request.json.get("username"))
+        username = request.json.get("username")
+        password = request.json.get("password")
 
-        if user is None:
+        try:
+            user = User.get(username)
+            if not user.verify_password(password):
+                return self.format_failure(401, "Login Failed")
+
+            access, refresh = generate_jwt_keypair(
+                user.user_id, user.tribe_id, user.role)
+
+            return self.format_success(200, {
+                "user": user.dictionary,
+                "tokens": {
+                    "access": access,
+                    "refresh": refresh
+                }
+            })
+
+        except User.DoesNotExist:
             return self.format_failure(401, "Login Failed")
-
-        password_valid = user.verify_password(request.json.get("password"))
-        if not password_valid:
-            return self.format_failure(401, "Login Failed")
-
-        access, refresh = generate_jwt_keypair(
-            user.id, user.tribe_id, user.role)
-
-        return self.format_success(200, {
-            "user": user.dictionary,
-            "tokens": {
-                "access": access,
-                "refresh": refresh
-            }
-        })

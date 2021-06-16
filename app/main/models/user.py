@@ -1,101 +1,79 @@
 """
 Created 05/02/2021
-SQLAlchemy Model for a User
+DynamoDB Model for a User
 """
-from uuid import uuid4
-from app.main.models.abstract_model import AbstractModel
-from app.main.models import db
 from argon2 import PasswordHasher
 from datetime import datetime
+from typing import ClassVar
+from app.main.constants import UserRoles
+from uuid import uuid4
+from argon2.exceptions import VerifyMismatchError
+from pynamodb.attributes import UTCDateTimeAttribute, UnicodeAttribute
+from pynamodb.models import Model
+from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
 
 
-class User(db.Model, AbstractModel):
+class UserIndex(GlobalSecondaryIndex):
+    """ User Indexes """
+    class Meta:
+        """" User Index Metadata """
+        projection = AllProjection()
+        read_capacity_units = 10
+        write_capacity_units = 10
+
+    user_id = UnicodeAttribute(default=lambda: str(uuid4()), hash_key=True)
+
+
+class User(Model):
     """
-    SQLAlchemy model for a User
-    id: int             # Primary Key, autoincrement
-    tribe_id: str       # The user's associated tribe ID
-    public_id: str      # The user's "Public ID" to be used in requests
-    username: str       # The user's username
-    password_hash: str  # Argon2 Hash of the user's password
+    DynamoDB Model for a User
+    user_id: str        # UUID4, Hash Key, Public ID
+    tribe_id: str       # UUID4, the user's associated tribe ID
     name: str           # The user's name
+    username: str       # The user's username
+    password: str       # Argon2 Hash of the user's password
     role: str           # The user's role in the system
     created_on: Date    # Creation timestamp
     """
+    class Meta:
+        """ Metadata for User Table """
+        table_name = "dynamodb-user"
+        host = "http://localhost:8000"
+        read_capacity_units = 10
+        write_capacity_units = 10
 
-    __tablename__ = "Users"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    tribe_id = db.Column(db.Integer, db.ForeignKey('Tribe.id'))
-    public_id = db.Column(db.String(100), unique=True, index=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    password_hash = db.Column(db.String(255), nullable=False)
-    name = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(10), nullable=False)
-    created_on = db.Column(db.DateTime, nullable=False)
-
-    def __repr__(self):
-        return "<User " + \
-            f"id='{self.id}' " +\
-            f"public_id='{self.public_id}' " + \
-            f"name='{self.name}' " + \
-            f"tribe_id='{self.tribe_id}' " + \
-            f"role='{self.role}' " + \
-            f"created_on='{self.created_on}'>"
-
-    @property
-    def password(self):
-        """ This is just for the setter! Don't use me! """
-        raise AttributeError("Don't access the password directly!")
-
-    @password.setter
-    def password(self, password: str):
-        """
-        Setter for self.password_hash, hashes and salts the password using Argon2
-        """
-        password_hasher = PasswordHasher()
-        self.password_hash = password_hasher.hash(password)
-
-    def verify_password(self, password: str) -> bool:
-        """
-        Verifies the raw password against the stored hash.
-        Returns a boolean value is_valid
-        """
-        password_hasher = PasswordHasher()
-        is_valid = password_hasher.verify(self.password_hash, password)
-
-        # TODO: Password revalidation
-        return is_valid
-
-    @staticmethod
-    def create(**kwargs):
-        """
-        Creates a new user in the DB. Expected data: "name", "username", "password"
-        """
-        password = kwargs.pop("password")
-        username = kwargs.pop("username")
-        name = kwargs.pop("name")
-
-        user = User(
-            tribe_id=kwargs.get("tribe_id"),
-            public_id=str(uuid4()),
-            username=username,
-            name=name,
-            role=kwargs.get("role"),
-            created_on=datetime.utcnow(),
-        )
-        user.password = password
-        user.save()
-        return user
+    user_id = UnicodeAttribute(default=lambda: str(uuid4()))
+    tribe_id = UnicodeAttribute(null=True)
+    name = UnicodeAttribute(null=False)
+    username = UnicodeAttribute(hash_key=True, null=False)
+    password = UnicodeAttribute(null=False)
+    role = UnicodeAttribute(default=UserRoles.USER)
+    created_on = UTCDateTimeAttribute(default=datetime.now)
+    index = UserIndex()
 
     @property
     def dictionary(self) -> dict:
-        """ A representation of the user as a dictionary """
-        return {
-            "id": self.id,
-            "tribe_id": self.tribe_id,
-            "public_id": self.public_id,
-            "name": self.name,
-            "role": self.role,
-            "username": self.username,
-            "created_on": self.created_on.isoformat()  # pylint: disable=no-member
-        }
+        """ A representation of a User as a dict """
+        values = self.attribute_values.copy()
+        del values["password"]
+        values["created_on"] = values["created_on"].isoformat()
+        return values
+
+    def set_password(self, raw_password: str):
+        """ Hash and set the password """
+        self.password = PasswordHasher().hash(raw_password)
+
+    def verify_password(self, raw_password: str):
+        """ Verifies the provided password against the hashed password """
+        hasher = PasswordHasher()
+
+        try:
+            hasher.verify(self.password, raw_password)
+
+            if hasher.check_needs_rehash(self.password):
+                self.set_password(self.password)
+                self.save()
+            return True
+
+        except VerifyMismatchError:
+            return False

@@ -1,7 +1,4 @@
 """
 Created 05/02/2021
-Provides a single SQLAlchemy instance
+Empty __init__.py for models
 """
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()

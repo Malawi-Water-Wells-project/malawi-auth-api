@@ -3,8 +3,8 @@ Created 05/02/2021
 Management Script
 """
 
-from app.main.service.well_hygiene_service import WellHygieneService
-from app.main.service.well_service import WellService
+# from app.main.service.well_hygiene_service import WellHygieneService
+# from app.main.service.well_service import WellService
 import csv
 import os
 import unittest
@@ -16,7 +16,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from app.main.constants import UserRoles
 from app.main import Application
-from app.main.models import db
+# from app.main.models import db
 from app.main.models.user import User
 from app.main.models.well import Well
 
@@ -25,10 +25,10 @@ app = Application(os.getenv("ENV") or "dev")
 app.flask.app_context().push()
 
 manager = Manager(app.flask)
-migrate = Migrate(app.flask, db)
+# migrate = Migrate(app.flask, db)
 
 
-manager.add_command("db", MigrateCommand)
+# manager.add_command("db", MigrateCommand)
 
 
 @manager.command
@@ -112,16 +112,14 @@ def create_user():
 
     user = User(
         tribe_id=tribe_id,
-        public_id=str(uuid4()),
         username=username,
         name=name,
-        role=role,
-        created_on=datetime.utcnow()
+        role=role
     )
-    user.password = password
+    user.set_password(password)
 
     print("Do you want to add this user to the database?")
-    print(user)
+    print(user.dictionary)
 
     answers = inquirer.prompt([inquirer.Confirm("confirm", message="Confirm")])
 
@@ -129,8 +127,7 @@ def create_user():
     if not confirm:
         return
 
-    db.session.add(user)
-    db.session.commit()
+    user.save()
 
     print(f"Successfully added user: {user}")
 

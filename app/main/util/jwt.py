@@ -7,8 +7,6 @@ from datetime import datetime, timedelta
 from typing import Tuple, Union
 
 from app.main.config import secret_key
-from app.main.service.token_service import store_refresh_token
-
 import jwt
 
 
@@ -42,13 +40,15 @@ def generate_jwt_keypair(user_id: int, tribe_id: str, role: str) -> Tuple[str, s
         "iat": datetime.utcnow()
     }
 
+    print((datetime.utcnow() + timedelta(minutes=15)).timestamp())
+
     access_token = jwt.encode(
         {
             **base_claims,
             "exp": datetime.utcnow() + timedelta(minutes=15)
         },
         secret_key,
-        algorithm="HS256"
+        algorithm="HS256",
     )
 
     refresh_token_expiry = datetime.utcnow() + timedelta(weeks=52)
@@ -61,7 +61,7 @@ def generate_jwt_keypair(user_id: int, tribe_id: str, role: str) -> Tuple[str, s
         algorithm="HS256"
     )
 
-    store_refresh_token(refresh_token, refresh_token_expiry, user_id)
+    # store_refresh_token(refresh_token, refresh_token_expiry, user_id)
 
     return access_token, refresh_token
 

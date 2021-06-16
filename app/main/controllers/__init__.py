@@ -7,7 +7,7 @@ import app.main.dto as dto
 from app.main.controllers.auth import *
 from app.main.controllers.tribes import *
 from app.main.controllers.users import *
-from app.main.controllers.wells import *
+# from app.main.controllers.wells import *
 from flask_restx import Api
 
 

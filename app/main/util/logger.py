@@ -27,49 +27,50 @@ class AppLogger():
     }
 
     def __init__(self, logLevel=logging.DEBUG):
-        self._logger = logging.getLogger("malawi-auth-api")
-        self._logger.setLevel(logLevel)
+        pass
+        # self._logger = logging.getLogger("malawi-auth-api")
+        # self._logger.setLevel(logLevel)
 
-        if not self._logger.hasHandlers():
-            self._bind_handlers()
+        # if not self._logger.hasHandlers():
+        #     self._bind_handlers()
 
-        if len(LOG_CACHE) == 1:
-            self._load_log_cache()
+        # if len(LOG_CACHE) == 1:
+        #     self._load_log_cache()
 
     def _bind_handlers(self):
         """ Binds Logstash Handlers to the Logging object """
-        load_dotenv()
-        handler = AsynchronousLogstashHandler(
-            host=os.environ["LOGSTASH_HOST"],
-            port=int(os.environ["LOGSTASH_PORT"]),
-            database_path=None,
-        )
-        handler.setFormatter(FlaskLogstashFormatter())
-        self._logger.addHandler(handler)
+        # load_dotenv()
+        # handler = AsynchronousLogstashHandler(
+        #     host=os.environ["LOGSTASH_HOST"],
+        #     port=int(os.environ["LOGSTASH_PORT"]),
+        #     database_path=None,
+        # )
+        # handler.setFormatter(FlaskLogstashFormatter())
+        # self._logger.addHandler(handler)
 
     def log(self, log_point: str, data: dict = None):
         """ Logs the current logpoint """
-        if not LOG_CACHE.has_section(log_point):
-            raise ValueError(f"Log Point {log_point} has not been defined")
+        # if not LOG_CACHE.has_section(log_point):
+        #     raise ValueError(f"Log Point {log_point} has not been defined")
 
-        level = LOG_CACHE[log_point].get("LogLevel")
-        text = LOG_CACHE[log_point].get("LogText")
+        # level = LOG_CACHE[log_point].get("LogLevel")
+        # text = LOG_CACHE[log_point].get("LogText")
 
-        if not level or not text:
-            raise ValueError(
-                f"Log Point {log_point} is missing one or both of LogLevel and LogText")
+        # if not level or not text:
+        #     raise ValueError(
+        #         f"Log Point {log_point} is missing one or both of LogLevel and LogText")
 
-        casted_level = self._cast_log_level(level)
+        # casted_level = self._cast_log_level(level)
 
-        extra = {
-            "code": log_point,
-            **(data or {})
-        }
+        # extra = {
+        #     "code": log_point,
+        #     **(data or {})
+        # }
 
-        if has_request_context():
-            extra.update({"internal_id": request.internal_id})
+        # if has_request_context():
+        #     extra.update({"internal_id": request.internal_id})
 
-        self._logger.log(casted_level, text, extra=extra)
+        # self._logger.log(casted_level, text, extra=extra)
 
     def log_crash(self, code):
         pass
