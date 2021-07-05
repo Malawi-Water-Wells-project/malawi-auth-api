@@ -19,4 +19,3 @@ source venv/bin/activate
 
 ## Running the App
 Run `python manage.py run`
-# pottery-shop-admin
