@@ -44,8 +44,6 @@ def run_prod(host, port, workers):
     """ Run the application in production mode """
     from gunicorn.app.base import Application as GunicornApplication
 
-    migrate.init_app(app, db)
-
     class FlaskApplication(GunicornApplication):
         def init(self, parser, opts, args):
             return {
