@@ -2,7 +2,6 @@
 Created 20/05/2021
 GetTribeAdmins API Resource
 """
-from app.main.models.tribe import Tribe
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
 from app.main.service.tribe_service import TribeService
@@ -21,11 +20,11 @@ class GetTribeAdmins(Resource):
         Gets all Tribe Admins in a Tribe
         """
 
-        tribe = TribeService.get_by_public_id(tribe_id)
+        tribe = TribeService.get_by_id(tribe_id)
 
         if not tribe:
             return self.format_failure(404, "Tribe Not Found")
 
-        admins = [admin.dictionary for admin in tribe.get_admins()]
+        admins = TribeService.get_tribeadmins(tribe)
 
-        return self.format_success(200, {"admins": admins})
+        return self.format_success(200, {"admins": [admin.dictionary for admin in admins]})

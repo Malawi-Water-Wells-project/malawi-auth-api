@@ -2,6 +2,7 @@
 Created 15/05/2021
 User API Resource
 """
+from app.main.service.token_service import TokenService
 from app.main.service.tribe_service import TribeService
 from pynamodb.exceptions import DeleteError
 from app.main.service.user_service import UserService
@@ -71,12 +72,17 @@ class UserResource(Resource):
         if user is None:
             return self.format_failure(404, "User not found")
 
+        # Revoke Refresh Tokens
+        TokenService.remove_tokens_for_user(user_id)
+
+        # Remove User from their Tribe
         if user.tribe_id is not None:
             tribe = TribeService.get_by_id(user.tribe_id)
             if tribe is not None:
                 tribe.users.remove(user_id)
                 tribe.save()
 
+        # Delete the User
         try:
             user.delete()
             return self.format_success(204)

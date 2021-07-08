@@ -21,11 +21,10 @@ class GetCurrentTribe(Resource):
         GET /tribes/current
         Gets the Tribe for the currently logged in user
         """
-
         tribe_id = jwt.get("tribe_id")
 
         if not tribe_id:
-            return self.format_failure(400, "This user is not associated with a tribe")
+            return self.format_failure(400, "You are not associated with a tribe")
 
         tribe = TribeService.get_by_id(tribe_id)
         if not tribe:

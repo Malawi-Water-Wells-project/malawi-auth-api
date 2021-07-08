@@ -28,6 +28,7 @@ class ClaimToken(Resource):
         Also links the user with a tribe obtained from the token.
         """
         del body["token"]
+
         user = User.create(tribe_id=tribe.id,
                            role=UserRoles.USER, **body)
 

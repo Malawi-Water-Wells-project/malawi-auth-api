@@ -6,6 +6,18 @@ from datetime import datetime
 from uuid import uuid4
 from pynamodb.attributes import BooleanAttribute, UTCDateTimeAttribute, UnicodeAttribute
 from pynamodb.models import Model
+from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
+
+
+class RefreshTokenUserIndex(GlobalSecondaryIndex):
+    """ Global Index for querying refresh tokens by User ID """
+    class Meta:
+        """ Refresh Token Index Metadata """
+        projection = AllProjection()
+        read_capacity_units = 10
+        write_capacity_units = 10
+
+    user_id = UnicodeAttribute(null=False, hash_key=True)
 
 
 class RefreshToken(Model):
@@ -20,19 +32,16 @@ class RefreshToken(Model):
     class Meta:
         """ Metadata for RefreshToken Table """
         table_name = "dynamodb-refreshtoken"
-        host = "http://localhost:8000"
         read_capacity_units = 1
         write_capacity_units = 1
 
-    token_id: str = UnicodeAttribute(hash_key=True, default=uuid4)
-    token: str = UnicodeAttribute(null=False)
+    token: str = UnicodeAttribute(hash_key=True, null=False)
     user_id: str = UnicodeAttribute(null=False)
     expires_at: datetime = UTCDateTimeAttribute(null=False)
-    revoked: bool = BooleanAttribute(null=False)
+    user_index = RefreshTokenUserIndex()
 
     def __repr__(self):
         return "<RefreshToken " + \
-            f"token_id='{self.token_id}' " + \
             f"token='{self.token}' " + \
             f"user_id='{self.user_id}' " + \
             f"expires_at='{self.expires_at}' " + \

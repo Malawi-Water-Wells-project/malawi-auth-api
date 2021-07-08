@@ -4,7 +4,6 @@ DynamoDB Model for a User
 """
 from argon2 import PasswordHasher
 from datetime import datetime
-from typing import ClassVar
 from app.main.constants import UserRoles
 from uuid import uuid4
 from argon2.exceptions import VerifyMismatchError
@@ -38,7 +37,6 @@ class User(Model):
     class Meta:
         """ Metadata for User Table """
         table_name = "dynamodb-user"
-        host = "http://localhost:8000"
         read_capacity_units = 10
         write_capacity_units = 10
 

@@ -2,9 +2,6 @@
 Created 20/05/2021
 CheckTokenController API Resource
 """
-import base64
-import json
-
 from app.main.controllers.resource import Resource
 from app.main.dto import TribeDto
 from app.main.service.tribe_service import TribeService
@@ -22,17 +19,14 @@ class CheckToken(Resource):
         POST /tribes/check-token/
         Checks if a join token is valid, and returns Tribe details if it is
         """
-        token = request.json.get("token")
+        token_id = request.json.get("token")
 
-        if token is None:
+        if token_id is None:
             return self.format_failure(400, "Token not provided")
 
-        decoded_token = json.loads(base64.b64decode(
-            token.encode("ascii")).decode("ascii"))
+        token = TribeService.lookup_join_token(token_id)
 
-        is_valid = TribeService.check_join_token(decoded_token)
-
-        if not is_valid:
+        if token is None:
             return self.format_failure(400, "Invalid Token")
 
-        return self.format_success(200, {"is_valid": True, "token": decoded_token})
+        return self.format_success(200, {"is_valid": True, "token": token.dictionary})

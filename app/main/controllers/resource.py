@@ -57,6 +57,11 @@ class Resource(FlaskResource):
 
         return Resource._build_response(code, ResponseStatus.MIXED, data)
 
+    @staticmethod
+    def no_permissions_for_action():
+        """ Returns an access denied response for an action """
+        return Resource.format_failure(403, "You are not authorized to perform this action.")
+
     def dispatch_request(self, *args, **kwargs):
         self._log_request()
         try:

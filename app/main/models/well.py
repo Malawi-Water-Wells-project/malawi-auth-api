@@ -22,7 +22,6 @@ class Well(Model):
     class Meta:
         """ Metadata for Well Table """
         table_name = "dynamodb-well"
-        host = "http://localhost:8000"
         read_capacity_units = 1
         write_capacity_units = 1
 

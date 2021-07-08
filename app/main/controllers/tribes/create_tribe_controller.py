@@ -23,6 +23,6 @@ class CreateTribe(Resource):
         POST /tribes/create
         Creates a new Tribe
         """
-
-        new_tribe = Tribe.create(**request.json)
-        return self.format_success(201, {"tribe": new_tribe.dictionary})
+        tribe = Tribe(**request.json)
+        tribe.save()
+        return self.format_success(201, {"tribe": tribe.dictionary})

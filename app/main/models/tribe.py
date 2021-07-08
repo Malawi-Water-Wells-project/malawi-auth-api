@@ -31,7 +31,6 @@ class Tribe(Model):
     class Meta:
         """ Metadata for Tribe Table """
         table_name = "dynamodb-tribe"
-        host = "http://localhost:8000"
         read_capacity_units = 1
         write_capacity_units = 1
 

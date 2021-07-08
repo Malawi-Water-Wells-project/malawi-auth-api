@@ -2,6 +2,7 @@
 Created 20/05/2021
 Authentication Decorators
 """
+from app.main.service.tribe_service import TribeService
 from functools import wraps
 
 from app.main.constants import UserRoles
@@ -41,11 +42,6 @@ class AuthDecorators:
 
         return wrapper
 
-    # @staticmethod
-    # def _get_role_for_user(kwargs: dict):
-    #     jwt = kwargs.get("jwt")
-    #     print(jwt)
-
     @classmethod
     def ensure_is_admin(cls, wrapped_func):
         """
@@ -64,34 +60,36 @@ class AuthDecorators:
 
         return wrapper
 
-    # @classmethod
-    # def ensure_is_tribe_admin(cls, wrapped_func):
-    #     """
-    #     Ensures that the incoming request is from a tribe admin
-    #     Prerequisites: Authdecorators.ensure_logged_in
-    #     """
-    #     @wraps(wrapped_func)
-    #     @cls.ensure_logged_in
-    #     def wrapper(*args, **kwargs):
-    #         tribe_id = kwargs.get("tribe_id")
-    #         jwt = kwargs.get("jwt")
+    @classmethod
+    def ensure_is_tribe_admin(cls, wrapped_func):
+        """
+        Ensures that the incoming request is from a tribe admin
+        Prerequisites: AuthDecorators.ensure_logged_in
+        """
+        @wraps(wrapped_func)
+        @cls.ensure_logged_in
+        def wrapper(*args, **kwargs):
+            tribe = TribeService.get_by_id(kwargs["tribe_id"])
+            if tribe is None:
+                return Resource.format_failure(404, "Tribe not found")
 
-    #         tribe = TribeService.get_by_public_id(tribe_id)
+            role = kwargs["jwt"]["role"]
+            if role == UserRoles.ADMIN:
+                return wrapped_func(*args, **kwargs, tribe=tribe)
 
-    #         if tribe is None:
-    #             return Resource.format_failure(404, "Tribe not found")
+            if role != UserRoles.TRIBE_ADMIN:
+                return Resource.no_permissions_for_action()
 
-    #         role = jwt.get("role")
-    #         token_tribe_id = jwt.get("tribe_id")
+            user_tribe_id = kwargs["jwt"].get("tribe_id")
+            if user_tribe_id is None:
+                return Resource.no_permissions_for_action()
 
-    #         if role and role == UserRoles.ADMIN:
-    #             return wrapped_func(*args, **kwargs, tribe=tribe)
+            if user_tribe_id != tribe.tribe_id:
+                return Resource.no_permissions_for_action()
 
-    #         if role and role == UserRoles.TRIBE_ADMIN and token_tribe_id == tribe.id:
-    #             return wrapped_func(*args, **kwargs, tribe=tribe)
-    #         return Resource.format_failure(403, "You are not authorized to perform this action.")
+            return wrapped_func(*args, **kwargs, tribe=tribe)
 
-    #     return wrapper
+        return wrapper
 
     # @classmethod
     # def ensure_user_access(cls, wrapped_func):
