@@ -2,10 +2,10 @@
 Created 16/05/2021
 Login API Resource
 """
+from app.main.service.token_service import TokenService
 from app.main.models.user import User
 from app.main.controllers.resource import Resource
 from app.main.dto import AuthDto
-from app.main.util.jwt import generate_jwt_keypair
 from flask import request
 
 api = AuthDto.api
@@ -32,8 +32,11 @@ class Login(Resource):
             if not user.verify_password(password):
                 return self.format_failure(401, "Login Failed")
 
-            access, refresh = generate_jwt_keypair(
-                user.user_id, user.tribe_id, user.role)
+            access, refresh = TokenService.create_keypair(
+                user_id=user.user_id,
+                tribe_id=user.tribe_id,
+                role=user.role
+            )
 
             return self.format_success(200, {
                 "user": user.dictionary,

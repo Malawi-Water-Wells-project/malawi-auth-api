@@ -23,7 +23,6 @@ class RefreshTokenUserIndex(GlobalSecondaryIndex):
 class RefreshToken(Model):
     """
     DynamoDB Model for a Refresh Token
-    token_id: str                 # UUID4, Hash Key
     token: str              # The encoded JWT
     user_id: str            # The associated user ID
     expires_at: datetime    # Expiry date of the token
@@ -38,6 +37,7 @@ class RefreshToken(Model):
     token: str = UnicodeAttribute(hash_key=True, null=False)
     user_id: str = UnicodeAttribute(null=False)
     expires_at: datetime = UTCDateTimeAttribute(null=False)
+    revoked: bool = BooleanAttribute(null=False, default=False)
     user_index = RefreshTokenUserIndex()
 
     def __repr__(self):
