@@ -25,7 +25,7 @@ def run():
 
 @manager.option('-h', '--host', dest='host', default='0.0.0.0')
 @manager.option('-p', '--port', dest='port', type=int, default=8080)
-@manager.option('-w', '--workers', dest='workers', type=int, default=4)
+@manager.option('-w', '--workers', dest='workers', type=int, default=1)
 def run_prod(host, port, workers):
     """ Run the application in production mode """
     # pylint: disable=import-outside-toplevel
