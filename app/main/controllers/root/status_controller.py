@@ -3,11 +3,13 @@ Created 12/07/2021
 API Status
 """
 
-from flask.wrappers import Response
+from datetime import datetime
 from app.main.dto import RootDto
 from app.main.controllers.resource import Resource
+from os import getloadavg
 
 api = RootDto.api
+start_time = datetime.now()
 
 
 @api.route("/status")
@@ -21,4 +23,7 @@ class Status(Resource):
         GET /status
         """
 
-        return self.format_success(200, "Pong")
+        return self.format_success(200, {
+            "uptime": (datetime.now() - start_time).seconds,
+            "load": getloadavg()
+        })

@@ -4,10 +4,10 @@ __init__.py for the controllers
 """
 
 import app.main.dto as dto
-from app.main.controllers.status_controller import *
 from app.main.controllers.auth import *
 from app.main.controllers.tribes import *
 from app.main.controllers.users import *
+from app.main.controllers.root import *
 # from app.main.controllers.wells import *
 from flask_restx import Api
 

@@ -2,14 +2,13 @@
 Created 15/05/2021
 Abstract API Resource
 """
-import sys
 from datetime import date, datetime
+from sys import intern
 from uuid import uuid4
 
 from app.main.constants import ResponseStatus
 from app.main.util.logger import AppLogger
 from flask import has_request_context, request
-from flask.wrappers import Response
 from flask_restx import Resource as FlaskResource
 
 
@@ -20,9 +19,11 @@ class Resource(FlaskResource):
         super().__init__(api=api, *args, **kwargs)
         self.logger = AppLogger()
         self._start_time = None
-        self.internal_id = str(uuid4())
+
+        internal_id = str(uuid4())
+        self.internal_id = internal_id
         if has_request_context():
-            request.internal_id = self.internal_id
+            request.view_args["internal_id"] = internal_id
 
     @staticmethod
     def _build_response(code: int, status: str, data: dict = None):
@@ -70,7 +71,6 @@ class Resource(FlaskResource):
             return response, code
         except Exception as exc:  # pylint: disable=broad-except
             self._log_failure(exc)
-            raise exc
             return self.format_failure(500, "Internal Server Error")
 
     @property
