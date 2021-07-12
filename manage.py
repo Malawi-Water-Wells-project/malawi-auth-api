@@ -3,17 +3,14 @@ Created 05/02/2021
 Management Script
 """
 
-import csv
 import os
 import unittest
-import random
 import inquirer
 
 from flask_script import Manager
 from app.main import Application
 from app.main.constants import UserRoles
 from app.main.models.user import User
-from app.main.models.well import Well
 
 app = Application(os.getenv("ENV") or "dev")
 manager = Manager(app.flask)
@@ -22,7 +19,8 @@ manager = Manager(app.flask)
 @manager.command
 def run():
     """ Run the application in dev mode """
-    app.flask.run(host="0.0.0.0", port=8080, debug=True)
+    app.flask.run(host="0.0.0.0", port=8080, debug=True,
+                  load_dotenv=True, use_evalex=False)
 
 
 @manager.option('-h', '--host', dest='host', default='0.0.0.0')
@@ -30,10 +28,13 @@ def run():
 @manager.option('-w', '--workers', dest='workers', type=int, default=4)
 def run_prod(host, port, workers):
     """ Run the application in production mode """
+    # pylint: disable=import-outside-toplevel
     from gunicorn.app.base import Application as GunicornApplication
 
     class FlaskApplication(GunicornApplication):
-        def init(self, parser, opts, args):
+        """ Gunicorn FlaskApplication Wrapper """
+
+        def init(self, _parser, _opts, _args):
             return {
                 "bind": f"{host}:{port}",
                 "workers": workers
@@ -42,8 +43,7 @@ def run_prod(host, port, workers):
         def load(self):
             return app.flask
 
-    gunicorn_app = FlaskApplication()
-    return gunicorn_app.run()
+    return FlaskApplication().run()
 
 
 @manager.command
