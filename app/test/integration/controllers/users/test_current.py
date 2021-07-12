@@ -41,9 +41,9 @@ class CurrentUserTestCase(IntegrationTestCase):
         self.assertEqual(body["user"]["name"], "Integration Test Admin")
         self.assertEqual(body["user"]["role"], "admin")
 
-    def test_tribe_admin_logged_in(self):
-        """ Test that it works correctly with a tribeadmin """
-        token, _ = self.get_tokens(TestLogins.TRIBEADMIN)
+    def test_village_admin_logged_in(self):
+        """ Test that it works correctly with a villageadmin """
+        token, _ = self.get_tokens(TestLogins.VILLAGEADMIN)
 
         response = requests.get(
             f"{API_ENDPOINT_URL}/users/current", headers={"Authorization": f"Bearer {token}"})
@@ -53,8 +53,8 @@ class CurrentUserTestCase(IntegrationTestCase):
         self.assertEqual(body["status"], "Success")
         self.assertEqual(body["code"], 200)
 
-        self.assertEqual(body["user"]["name"], "Integration Test TribeAdmin")
-        self.assertEqual(body["user"]["role"], "tribeadmin")
+        self.assertEqual(body["user"]["name"], "Integration Test VillageAdmin")
+        self.assertEqual(body["user"]["role"], "villageadmin")
 
     def test_user_logged_in(self):
         """ Test that it works correctly with a user """

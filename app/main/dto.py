@@ -10,13 +10,13 @@ class RootDto:
     api = Namespace("root", description="Top-Level API Operations")
 
 
-class TribeDto:
-    """ Data Transfer Object for the Tribes Controller """
-    api = Namespace("tribe", description="Tribe Operations")
-    tribe = api.model("tribe", {
-        "name": fields.String(required=True, description="Tribe Name"),
-        "latitude": fields.Float(required=True, description="Latitude of Tribe"),
-        "longitude": fields.Float(required=True, description="Longitude of Tribe")
+class VillageDto:
+    """ Data Transfer Object for the Villages Controller """
+    api = Namespace("village", description="Village Operations")
+    village = api.model("village", {
+        "name": fields.String(required=True, description="Village Name"),
+        "latitude": fields.Float(required=True, description="Latitude of Village"),
+        "longitude": fields.Float(required=True, description="Longitude of Village")
     })
     admin = api.model("admin", {
         "name": fields.String(required=True, description="Admin Name"),

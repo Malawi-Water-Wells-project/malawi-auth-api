@@ -52,7 +52,7 @@ class Authorize(Resource):
         access_token = TokenService.create_access_token(
             user_id=record.user_id,
             role=details.get("role"),
-            tribe_id=details.get("tribe_id")
+            village_id=details.get("village_id")
         )
 
         return self.format_success(200, {"token": access_token, "user": user.dictionary})

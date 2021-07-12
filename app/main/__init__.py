@@ -1,10 +1,8 @@
 """
 Created 05/02/2021
 """
-from app.main.models.user import User
 from app.main.config import get_config_for_env
 from app.main.controllers import bind_controllers
-from app.main.models import ensure_tables
 from dotenv import load_dotenv
 from flask import Blueprint, Flask
 from flask_cors import CORS
@@ -22,7 +20,6 @@ class Application():
         self.flask = Flask(__name__)
         self.flask.config.from_object(self.config)
         CORS(self.flask)
-        ensure_tables()
 
         blueprint = Blueprint("auth_api", __name__,  url_prefix="/")
         self.api = Api(

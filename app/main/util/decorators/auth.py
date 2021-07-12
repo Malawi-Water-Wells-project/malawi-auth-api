@@ -2,13 +2,11 @@
 Created 20/05/2021
 Authentication Decorators
 """
-from app.main.service.tribe_service import TribeService
+from app.main.service.village_service import VillageService
 from functools import wraps
 
 from app.main.constants import UserRoles
 from app.main.controllers.resource import Resource
-# from app.main.service.tribe_service import TribeService
-# from app.main.service.user_service import UserService
 from app.main.util.jwt import validate_access_token
 from app.main.util.logger import AppLogger
 from flask.globals import request
@@ -16,7 +14,7 @@ from flask.globals import request
 
 class AuthDecorators:
     """ Decorators for various auth control flows """
-    # logger = AppLogger()
+    logger = AppLogger()
 
     @classmethod
     def ensure_logged_in(cls, wrapped_func):
@@ -28,16 +26,16 @@ class AuthDecorators:
         def wrapper(*args, **kwargs):
             token = request.headers.get("Authorization")
             if token is None:
-                # cls.logger.log("AUTH001")
+                cls.logger.log("AUTH001")
                 return Resource.format_failure(401, "Not Authorized")
 
             error, payload = validate_access_token(token)
 
             if error is not None:
-                # cls.logger.log("AUTH002")
+                cls.logger.log("AUTH002")
                 return Resource.format_failure(401, error)
 
-            # cls.logger.log("AUTH003")
+            cls.logger.log("AUTH003")
             return wrapped_func(*args, **kwargs, jwt=payload)
 
         return wrapper
@@ -61,33 +59,33 @@ class AuthDecorators:
         return wrapper
 
     @classmethod
-    def ensure_is_tribe_admin(cls, wrapped_func):
+    def ensure_is_village_admin(cls, wrapped_func):
         """
-        Ensures that the incoming request is from a tribe admin
+        Ensures that the incoming request is from a village admin
         Prerequisites: AuthDecorators.ensure_logged_in
         """
         @wraps(wrapped_func)
         @cls.ensure_logged_in
         def wrapper(*args, **kwargs):
-            tribe = TribeService.get_by_id(kwargs["tribe_id"])
-            if tribe is None:
-                return Resource.format_failure(404, "Tribe not found")
+            village = VillageService.get_by_id(kwargs["village_id"])
+            if village is None:
+                return Resource.format_failure(404, "Village not found")
 
             role = kwargs["jwt"]["role"]
             if role == UserRoles.ADMIN:
-                return wrapped_func(*args, **kwargs, tribe=tribe)
+                return wrapped_func(*args, **kwargs, village=village)
 
-            if role != UserRoles.TRIBE_ADMIN:
+            if role != UserRoles.VILLAGE_ADMIN:
                 return Resource.no_permissions_for_action()
 
-            user_tribe_id = kwargs["jwt"].get("tribe_id")
-            if user_tribe_id is None:
+            user_village_id = kwargs["jwt"].get("village_id")
+            if user_village_id is None:
                 return Resource.no_permissions_for_action()
 
-            if user_tribe_id != tribe.tribe_id:
+            if user_village_id != village.village_id:
                 return Resource.no_permissions_for_action()
 
-            return wrapped_func(*args, **kwargs, tribe=tribe)
+            return wrapped_func(*args, **kwargs, village=village)
 
         return wrapper
 

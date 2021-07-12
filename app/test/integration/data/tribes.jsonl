@@ -1,1 +1,1 @@
-{ "tribe_id": "e035ac48-872c-4f78-a092-cbfb34f888ec", "name": "Test Tribe", "latitude": 10, "longitude": 10, "users": ["c8f81418-0730-41b2-8c55-7a337521214c", "6b1aabfd-377c-4163-8354-64a482bc3acc"], "wells": [] }
+{ "village_id": "e035ac48-872c-4f78-a092-cbfb34f888ec", "name": "Test village", "latitude": 10, "longitude": 10, "users": ["c8f81418-0730-41b2-8c55-7a337521214c", "6b1aabfd-377c-4163-8354-64a482bc3acc"], "wells": [] }

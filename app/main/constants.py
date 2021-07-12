@@ -2,12 +2,13 @@
 Created 05/02/2021
 Application Constants
 """
+#pylint: disable=too-few-public-methods
 
 
 class UserRoles:
     """ Roles that can be associated with Users """
     ADMIN = "admin"
-    TRIBE_ADMIN = "tribeadmin"
+    VILLAGE_ADMIN = "villageadmin"
     USER = "user"
 
 

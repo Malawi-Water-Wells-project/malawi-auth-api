@@ -10,11 +10,11 @@ from app.main.config import secret_key
 import jwt
 
 
-def generate_access_token(user_id: int, tribe_id: str, role: str) -> str:
+def generate_access_token(user_id: int, village_id: str, role: str) -> str:
     """ Generate an access token that expires in 15 minutes """
     base_claims = {
         "user_id": user_id,
-        "tribe_id": tribe_id,
+        "village_id": village_id,
         "role": role,
         "iat": datetime.utcnow()
     }
@@ -31,39 +31,6 @@ def generate_access_token(user_id: int, tribe_id: str, role: str) -> str:
     return access_token
 
 
-def generate_jwt_keypair(user_id: int, tribe_id: str, role: str) -> Tuple[str, str]:
-    """ Generates and stores a JWT keypair (access+refresh) """
-    base_claims = {
-        "user_id": user_id,
-        "tribe_id": tribe_id,
-        "role": role,
-        "iat": datetime.utcnow()
-    }
-
-    print((datetime.utcnow() + timedelta(minutes=15)).timestamp())
-
-    access_token = jwt.encode(
-        {
-            **base_claims,
-            "exp": datetime.utcnow() + timedelta(minutes=15)
-        },
-        secret_key,
-        algorithm="HS256",
-    )
-
-    refresh_token_expiry = datetime.utcnow() + timedelta(weeks=52)
-    refresh_token = jwt.encode(
-        {
-            **base_claims,
-            "exp": refresh_token_expiry
-        },
-        secret_key,
-        algorithm="HS256"
-    )
-
-    # store_refresh_token(refresh_token, refresh_token_expiry, user_id)
-
-    return access_token, refresh_token
 
 
 def validate_access_token(token: str) -> Union[Tuple[None, dict], Tuple[str, None]]:

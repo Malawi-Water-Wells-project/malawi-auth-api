@@ -3,7 +3,7 @@ Created: 20/05/2021
 User Request Validator
 """
 
-from app.main.service.tribe_service import TribeService
+from app.main.service.village_service import VillageService
 from app.main.service.user_service import UserService
 from app.main.util.validation.rules import CommonRules
 from flask.globals import request
@@ -17,13 +17,13 @@ class CreateUserValidator(AbstractRequestValidator):
         "name":  CommonRules.NAME.required,
         "username": CommonRules.USERNAME.required,
         "password": CommonRules.PASSWORD.required,
-        "tribe_id": CommonRules.TRIBE_ID,
+        "village_id": CommonRules.VILLAGE_ID,
         "role": CommonRules.ROLE,
     }
 
     def postvalidation(self):
         """
-        Ensure that the username is unique and the tribe exists if provided
+        Ensure that the username is unique and the village exists if provided
         """
         existing_user = UserService.get_by_username(
             request.json.get("username"))
@@ -32,15 +32,15 @@ class CreateUserValidator(AbstractRequestValidator):
             self.add_error("username", "Username already exists")
             return
 
-        tribe_id = request.json.get("tribe_id")
-        if tribe_id is None:
-            self.lookup_cache.add("tribe", None)
+        village_id = request.json.get("village_id")
+        if village_id is None:
+            self.lookup_cache.add("village", None)
             return
 
-        tribe = TribeService.get_by_id(tribe_id)
-        if tribe is None:
-            self.add_error("tribe_id", "Tribe not found")
-        self.lookup_cache.add("tribe", tribe)
+        village = VillageService.get_by_id(village_id)
+        if village is None:
+            self.add_error("village_id", "Village not found")
+        self.lookup_cache.add("village", village)
 
 
 class PatchUserValidator(AbstractRequestValidator):
@@ -49,7 +49,7 @@ class PatchUserValidator(AbstractRequestValidator):
         "name": CommonRules.NAME,
         "username": CommonRules.USERNAME,
         "role": CommonRules.ROLE,
-        "tribe_id": CommonRules.TRIBE_ID
+        "village_id": CommonRules.VILLAGE_ID
     }
 
 
@@ -63,20 +63,20 @@ class ClaimTokenValidator(AbstractRequestValidator):
     }
 
     def postvalidation(self):
-        """ Check that the token is valid and the tribe exists """
-        token = TribeService.lookup_join_token(request.json.get("token"))
+        """ Check that the token is valid and the village exists """
+        token = VillageService.lookup_join_token(request.json.get("token"))
 
         if token is None:
             self.add_error("token", "Token does not exist")
             return
 
-        tribe_id = token.get("tribe_id")
-        if not tribe_id:
+        village_id = token.get("village_id")
+        if not village_id:
             self.add_error("token", "Invalid Token")
 
-        tribe = TribeService.get_by_public_id(tribe_id)
+        village = VillageService.get_by_id(village_id)
 
-        if tribe is None:
+        if village is None:
             self.add_error("token", "Invalid Token")
 
-        self.lookup_cache["tribe"] = tribe
+        self.lookup_cache["village"] = village

@@ -2,24 +2,33 @@
 Created 05/02/2021
 Application Config
 """
+#pylint: disable=too-few-public-methods
 
 import os
-
-
 basedir = os.path.abspath(os.path.dirname(__file__))
+AW_ENV_NAME = os.environ["AW_ENV_NAME"].upper()
 
 
 class Config:
     """ Abstract Config Class """
-    SECRET_KEY = os.environ.get("APP_SECRET_KEY", "Shhhhh")
+    SECRET_KEY = os.environ["APP_SECRET_KEY"]
+    AW_ENV_NAME = AW_ENV_NAME
+    AWS_REGION = os.environ["AWS_REGION"]
     DEBUG = False
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TESTING = False
+
+    class Tables:
+        """ DynamoDB Tables """
+        USERS = f"{AW_ENV_NAME}__Users"
+        VILLAGES = f"{AW_ENV_NAME}__Villages"
+        REFRESH_TOKENS = f"{AW_ENV_NAME}__RefreshTokens"
+        JOIN_TOKENS = f"{AW_ENV_NAME}__JoinTokens"
+        WELLS = f"{AW_ENV_NAME}__Wells"
 
 
 class DevelopmentConfig(Config):
     """ Config for a Development Environment """
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgres@localhost:5432/postgres"
     CORS_ALLOW_HEADERS = ["authorization", "content-type"]
     CORS_ORIGINS = ["admin.local.africawater.org"]
 
@@ -28,21 +37,10 @@ class TestingConfig(Config):
     """ Config for Testing Suites """
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, '../../tmp/devdb_test.db')}"
 
 
 class ProductionConfig(Config):
     """ Production Config """
-
-    def __init__(self):
-        pg_user = os.getenv("POSTGRES_USER")
-        pg_password = os.getenv("POSTGRES_PASSWORD")
-        pg_host = os.getenv("POSTGRES_HOST")
-        pg_db = os.getenv("POSTGRES_DATABASE")
-
-        # pylint: disable=invalid-name
-        self.SQLALCHEMY_DATABASE_URI = f"postgresql://{pg_user}:{pg_password}@{pg_host}/{pg_db}"
-
     DEBUG = False
 
 

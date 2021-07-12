@@ -1,6 +1,6 @@
 """
 Created 05/02/2021
-DynamoDB Model for a Tribe
+DynamoDB Model for a Village
 """
 
 from datetime import datetime
@@ -12,29 +12,29 @@ from pynamodb.attributes import (
     UnicodeSetAttribute
 )
 from uuid import uuid4
-from typing import List, Set
+from typing import Set
+from app.main.config import Config
 
 
-class Tribe(Model):
+class Village(Model):
     """
-    DynamoDB Model for a Tribe
+    DynamoDB Model for a Village
 
-    tribe_id: str           # UUID4, Hash Key, Public ID
-    name: str               # Tribe's name
-    latitude: float         # Tribe's latitude
-    longitude: float        # Tribe's longitude
+    village_id: str         # UUID4, Hash Key, Public ID
+    name: str               # Village's name
+    latitude: float         # Village's latitude
+    longitude: float        # Village's longitude
     created_on: datetime    # Creation timestamp
-    users: List[str]        # List of User IDs
-    wells: List[str]        # List of Well IDs
+    users: Set[str]         # List of User IDs
+    wells: Set[str]         # List of Well IDs
     """
 
     class Meta:
-        """ Metadata for Tribe Table """
-        table_name = "dynamodb-tribe"
-        read_capacity_units = 1
-        write_capacity_units = 1
+        """ Metadata for Villages Table """
+        table_name = Config.Tables.VILLAGES
+        region = Config.AWS_REGION
 
-    tribe_id: str = UnicodeAttribute(
+    village_id: str = UnicodeAttribute(
         hash_key=True,
         default=lambda: str(uuid4())
     )
@@ -46,8 +46,8 @@ class Tribe(Model):
     wells: Set[str] = UnicodeSetAttribute(default=[])
 
     def __repr__(self):
-        return "<Tribe " + \
-            f"tribe_id='{self.tribe_id}' " + \
+        return "<Village " + \
+            f"village_id='{self.village_id}' " + \
             f"name='{self.name}' " + \
             f"latitude={self.latitude} " + \
             f"longitude={self.longitude} " + \
@@ -57,7 +57,7 @@ class Tribe(Model):
 
     @property
     def dictionary(self):
-        """ A representation of the Tribe as a dict """
+        """ A representation of the Village as a dict """
         values = self.attribute_values.copy()
         values["created_on"] = values["created_on"].isoformat()
         values["users"] = list(values["users"])

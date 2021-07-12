@@ -2,6 +2,7 @@
 Created 01/03/2021
 SQLAlchemy Model for a Well
 """
+from app.main.config import Config
 from uuid import uuid4
 from pynamodb.attributes import UnicodeAttribute
 from pynamodb.models import Model
@@ -21,9 +22,8 @@ class Well(Model):
     """
     class Meta:
         """ Metadata for Well Table """
-        table_name = "dynamodb-well"
-        read_capacity_units = 1
-        write_capacity_units = 1
+        table_name = Config.Tables.WELLS
+        region = Config.AWS_REGION
 
     well_id: str = UnicodeAttribute(
         hash_key=True,

@@ -23,8 +23,8 @@ class TestLogins:
         "password": INTEGRATION_TEST_PASSWORD
     }
 
-    TRIBEADMIN = {
-        "username": "inttest-tribeadmin",
+    VILLAGEADMIN = {
+        "username": "inttest-villageadmin",
         "password": INTEGRATION_TEST_PASSWORD
     }
 

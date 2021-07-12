@@ -50,7 +50,7 @@ class Login(Resource):
 
         access, refresh = TokenService.create_keypair(
             user_id=user.user_id,
-            tribe_id=user.tribe_id,
+            village_id=user.village_id,
             role=user.role
         )
 

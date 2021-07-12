@@ -2,7 +2,6 @@
 Created 26/05/2021
 """
 
-from app.main.service.tribe_service import TribeService
 from app.main.util.validation.requests import AbstractRequestValidator, CommonRules
 
 

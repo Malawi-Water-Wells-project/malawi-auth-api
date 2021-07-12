@@ -2,6 +2,7 @@
 Created 05/02/2021
 DynamoDB Model for a User
 """
+from app.main.config import Config
 from argon2 import PasswordHasher
 from datetime import datetime
 from app.main.constants import UserRoles
@@ -9,16 +10,15 @@ from uuid import uuid4
 from argon2.exceptions import VerifyMismatchError
 from pynamodb.attributes import UTCDateTimeAttribute, UnicodeAttribute
 from pynamodb.models import Model
-from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
+from pynamodb.indexes import KeysOnlyProjection, LocalSecondaryIndex
 
 
-class UserIndex(GlobalSecondaryIndex):
+class UserIndex(LocalSecondaryIndex):
     """ User Indexes """
     class Meta:
-        """" User Index Metadata """
-        projection = AllProjection()
-        read_capacity_units = 10
-        write_capacity_units = 10
+        """ Metadata for User Index """
+        projection = KeysOnlyProjection()
+        region = Config.AWS_REGION
 
     user_id = UnicodeAttribute(default=lambda: str(uuid4()), hash_key=True)
 
@@ -27,7 +27,7 @@ class User(Model):
     """
     DynamoDB Model for a User
     user_id: str        # UUID4, Hash Key, Public ID
-    tribe_id: str       # UUID4, the user's associated tribe ID
+    village_id: str     # UUID4, the user's associated village ID
     name: str           # The user's name
     username: str       # The user's username
     password: str       # Argon2 Hash of the user's password
@@ -36,12 +36,11 @@ class User(Model):
     """
     class Meta:
         """ Metadata for User Table """
-        table_name = "dynamodb-user"
-        read_capacity_units = 10
-        write_capacity_units = 10
+        table_name = Config.Tables.USERS
+        region = Config.AWS_REGION
 
     user_id = UnicodeAttribute(default=lambda: str(uuid4()))
-    tribe_id = UnicodeAttribute(null=True)
+    village_id = UnicodeAttribute(null=True)
     name = UnicodeAttribute(null=False)
     username = UnicodeAttribute(hash_key=True, null=False)
     password = UnicodeAttribute(null=False)

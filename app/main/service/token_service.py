@@ -22,11 +22,11 @@ class TokenService:
     REFRESH_TOKEN_LIFESPAN = 31449600
 
     @classmethod
-    def create_keypair(cls, user_id: str, tribe_id: Union[str, None], role: ClassVar[UserRoles]):
+    def create_keypair(cls, user_id: str, village_id: Union[str, None], role: ClassVar[UserRoles]):
         """ Creates a JWT keypair (access+refresh) """
         claims = {
             "user_id": user_id,
-            "tribe_id": tribe_id,
+            "village_id": village_id,
             "role": role,
             "iat": datetime.now()
         }
@@ -41,7 +41,7 @@ class TokenService:
         issue_time = kwargs.get("iat", datetime.now())
         return cls._encode_jwt(
             user_id=kwargs.get("user_id"),
-            tribe_id=kwargs.get("tribe_id"),
+            village_id=kwargs.get("village_id"),
             role=kwargs.get("role"),
             iat=issue_time,
             exp=issue_time + timedelta(seconds=cls.ACCESS_TOKEN_LIFESPAN)
@@ -51,7 +51,7 @@ class TokenService:
     def create_refresh_token(
         cls,
         user_id: str,
-        tribe_id: Union[str, None],
+        village_id: Union[str, None],
         role: ClassVar[UserRoles],
         iat: Union[int, None] = None
     ) -> str:
@@ -61,7 +61,7 @@ class TokenService:
             timedelta(seconds=cls.REFRESH_TOKEN_LIFESPAN)
         encoded_jwt = cls._encode_jwt(
             user_id=user_id,
-            tribe_id=tribe_id,
+            village_id=village_id,
             role=role,
             iat=issue_time,
             exp=expiry_time)
@@ -91,8 +91,6 @@ class TokenService:
             except DeleteError:
                 # TODO: Gracefully crash out here
                 pass
-
-
 
     @classmethod
     def decode_refresh_token(cls, token: str):

@@ -55,10 +55,10 @@ class CreateUserTests(IntegrationTestCase):
         self.assertEqual(body["status"], ResponseStatus.SUCCESS)
         self.assertEqual(body["user"]["user_id"], user_id)
 
-    @parameterized.expand([[TestLogins.USER], [TestLogins.TRIBEADMIN]])
+    @parameterized.expand([[TestLogins.USER], [TestLogins.VILLAGEADMIN]])
     def test_create_user_other_roles(self, role):
         """
-        Test that a user with role "user" or "tribeadmin" cannot create another user
+        Test that a user with role "user" or "villageadmin" cannot create another user
         """
         token, _ = self.get_tokens(role)
 
@@ -73,9 +73,9 @@ class CreateUserTests(IntegrationTestCase):
         self.assertEqual(
             body["error"], "You are not authorized to perform this action.")
 
-    def test_create_user_with_tribe(self):
+    def test_create_user_with_village(self):
         """
-        Test that a user can be created and associated with a tribe
+        Test that a user can be created and associated with a village
         """
         token, _ = self.get_tokens(TestLogins.ADMIN)
 
@@ -83,7 +83,7 @@ class CreateUserTests(IntegrationTestCase):
             "username": "MrTestUser",
             "password": "MrTestUserPass",
             "name": "Mr Test User",
-            "tribe_id": "e035ac48-872c-4f78-a092-cbfb34f888ec"
+            "village_id": "e035ac48-872c-4f78-a092-cbfb34f888ec"
         }
 
         response = requests.post(f"{API_ENDPOINT_URL}/users/create",
@@ -95,17 +95,17 @@ class CreateUserTests(IntegrationTestCase):
 
         self.addCleanup(lambda: self._remove_user(user_id))
 
-        self.assertEqual(body["user"]["tribe_id"],
+        self.assertEqual(body["user"]["village_id"],
                          "e035ac48-872c-4f78-a092-cbfb34f888ec")
 
-        # Get Tribe
+        # Get Village
         response = requests.get(
-            f"{API_ENDPOINT_URL}/tribes/e035ac48-872c-4f78-a092-cbfb34f888ec")
+            f"{API_ENDPOINT_URL}/villages/e035ac48-872c-4f78-a092-cbfb34f888ec")
 
         self.assertEqual(response.status_code, 200)
         body = response.json()
 
-        self.assertIn(user_id, body["tribe"]["users"])
+        self.assertIn(user_id, body["village"]["users"])
 
     def _remove_user(self, user_id: str):
         """ Cleanup - Removes the created user """

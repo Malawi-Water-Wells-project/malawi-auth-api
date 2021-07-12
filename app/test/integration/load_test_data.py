@@ -3,7 +3,7 @@ Created 16/06/2021
 Integration Test Data Setup
 """
 
-from app.main.models.tribe import Tribe
+from app.main.models.village import Village
 from ...main.models.user import User
 import os
 import json
@@ -23,8 +23,6 @@ def data_generator(file_name: str):
 def load_users():
     """ Load Users into the DB """
     print("=== Loading Users ===")
-    if not User.exists():
-        User.create_table()
 
     for record in data_generator("users.jsonl"):
         try:
@@ -36,26 +34,25 @@ def load_users():
         print(f"Loaded User: Username='{user.username} ID='{user.user_id}'")
 
 
-def load_tribes():
-    """ Load Tribes into the DB """
-    print("=== Loading Tribes ===")
-    if not Tribe.exists():
-        Tribe.create_table()
+def load_villages():
+    """ Load Villages into the DB """
+    print("=== Loading Villages ===")
 
-    for record in data_generator("tribes.jsonl"):
+    for record in data_generator("villages.jsonl"):
         try:
-            tribe = Tribe.get(record["tribe_id"])
-        except Tribe.DoesNotExist:
-            tribe = Tribe(**record)
-            tribe.save()
-        print(f"Loaded Tribe: Name='{tribe.name}' ID='{tribe.tribe_id}'")
+            village = Village.get(record["village_id"])
+        except Village.DoesNotExist:
+            village = Village(**record)
+            village.save()
+        print(
+            f"Loaded Village: Name='{village.name}' ID='{village.village_id}'")
 
 
 def main():
     """ Main Script Entrypoint """
     print("""=== Integration Test Data Load ===""")
     load_users()
-    load_tribes()
+    load_villages()
 
 
 if __name__ == "__main__":

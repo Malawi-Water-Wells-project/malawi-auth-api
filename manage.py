@@ -55,9 +55,9 @@ def create_user():
         inquirer.Text("username", message="Username"),
         inquirer.Password("password", message="Password"),
         inquirer.Password("password_repeat", message="Confirm Password"),
-        inquirer.Text("tribe_id", message="Tribe ID (optional)"),
+        inquirer.Text("village_id", message="Village ID (optional)"),
         inquirer.List("role", message="Role", choices=[
-                      UserRoles.USER, UserRoles.ADMIN, UserRoles.TRIBE_ADMIN])
+                      UserRoles.USER, UserRoles.ADMIN, UserRoles.VILLAGE_ADMIN])
     ]
 
     answers = inquirer.prompt(questions)
@@ -65,18 +65,18 @@ def create_user():
     username = answers.get("username")
     password = answers.get("password")
     password_repeat = answers.get("password_repeat")
-    tribe_id = answers.get("tribe_id")
+    village_id = answers.get("village_id")
     role = answers.get("role")
 
-    if not tribe_id:
-        tribe_id = None
+    if not village_id:
+        village_id = None
 
     if password_repeat != password:
         print("Passwords do not match!")
         return
 
     user = User(
-        tribe_id=tribe_id,
+        village_id=village_id,
         username=username,
         name=name,
         role=role
