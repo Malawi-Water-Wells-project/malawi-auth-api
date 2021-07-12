@@ -5,6 +5,11 @@ API Data Transfer Objects
 from flask_restx import Namespace, fields
 
 
+class RootDto:
+    """ Data Transfer Object for root-level controllers """
+    api = Namespace("root", description="Top-Level API Operations")
+
+
 class TribeDto:
     """ Data Transfer Object for the Tribes Controller """
     api = Namespace("tribe", description="Tribe Operations")

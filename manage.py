@@ -3,32 +3,20 @@ Created 05/02/2021
 Management Script
 """
 
-# from app.main.service.well_hygiene_service import WellHygieneService
-# from app.main.service.well_service import WellService
 import csv
 import os
 import unittest
-from datetime import datetime
-from uuid import uuid4
 import random
 import inquirer
-from flask_migrate import Migrate, MigrateCommand
+
 from flask_script import Manager
-from app.main.constants import UserRoles
 from app.main import Application
-# from app.main.models import db
+from app.main.constants import UserRoles
 from app.main.models.user import User
 from app.main.models.well import Well
 
 app = Application(os.getenv("ENV") or "dev")
-
-app.flask.app_context().push()
-
 manager = Manager(app.flask)
-# migrate = Migrate(app.flask, db)
-
-
-# manager.add_command("db", MigrateCommand)
 
 
 @manager.command
@@ -56,27 +44,6 @@ def run_prod(host, port, workers):
 
     gunicorn_app = FlaskApplication()
     return gunicorn_app.run()
-
-
-@manager.option("-i", "--input", dest="input_location", help="CSV File Input")
-def load_wells(input_location):
-    """ Load Well data from a CSV """
-    file_location = os.path.join(os.getcwd(), input_location)
-    with open(file_location) as input_file:
-
-        for row in csv.reader(input_file):
-            well_id, country, district, sub_district, village, latitude, _, longitude = row
-            db.session.add(Well(
-                well_id=well_id,
-                country=country,
-                district=district,
-                sub_district=sub_district,
-                village=village,
-                latitude=float(latitude),
-                longitude=float(longitude)
-            ))
-
-        db.session.commit()
 
 
 @manager.command
@@ -128,17 +95,6 @@ def create_user():
     user.save()
 
     print(f"Successfully added user: {user}")
-
-
-@manager.command
-def fake_well_hygiene():
-    """ Fakes Well Hygiene scores """
-    wells = WellService.get_all_wells()
-
-    for well in wells:
-        score = random.random()
-        WellHygieneService.update_well_hygiene_score(well.well_id, score)
-        print(f"Updated Score for Well: {well.well_id} => {score}")
 
 
 @manager.command

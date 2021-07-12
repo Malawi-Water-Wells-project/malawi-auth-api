@@ -2,6 +2,7 @@
 Created 16/05/2021
 Authorize API Resource
 """
+from app.main.service.user_service import UserService
 from app.main.service.token_service import TokenService
 from app.main.controllers.resource import Resource
 from app.main.dto import AuthDto
@@ -44,10 +45,14 @@ class Authorize(Resource):
         if details.get("user_id") != record.user_id:
             return self.format_failure(401, "Invalid Token")
 
+        user = UserService.get_by_id(record.user_id)
+        if user is None:
+            return self.format_failure(401, "User no longer exists")
+
         access_token = TokenService.create_access_token(
             user_id=record.user_id,
             role=details.get("role"),
             tribe_id=details.get("tribe_id")
         )
 
-        return self.format_success(200, {"token": access_token})
+        return self.format_success(200, {"token": access_token, "user": user.dictionary})
