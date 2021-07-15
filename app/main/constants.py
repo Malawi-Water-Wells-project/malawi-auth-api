@@ -5,6 +5,9 @@ Application Constants
 #pylint: disable=too-few-public-methods
 
 
+from app.main.config import Config
+
+
 class UserRoles:
     """ Roles that can be associated with Users """
     ADMIN = "admin"

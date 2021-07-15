@@ -2,6 +2,7 @@
 Created: 08/02/2021
 SQLAlchemy Model for a Refresh Token
 """
+from app.main.models.metadata import DefaultMeta
 from app.main.config import Config
 from datetime import datetime
 from pynamodb.attributes import BooleanAttribute, UTCDateTimeAttribute, UnicodeAttribute
@@ -11,10 +12,9 @@ from pynamodb.indexes import KeysOnlyProjection, GlobalSecondaryIndex
 
 class RefreshTokenUserIndex(GlobalSecondaryIndex):
     """ Global Index for querying refresh tokens by User ID """
-    class Meta:
+    class Meta(DefaultMeta):
         """ Refresh Token Index Metadata """
         projection = KeysOnlyProjection()
-        region = Config.AWS_REGION
 
     user_id = UnicodeAttribute(null=False, hash_key=True)
 
@@ -27,10 +27,9 @@ class RefreshToken(Model):
     expires_at: datetime    # Expiry date of the token
     revoked: bool           # Revoked status of the token (True=revoked, False=valid)
     """
-    class Meta:
+    class Meta(DefaultMeta):
         """ Metadata for RefreshToken Table """
         table_name = Config.Tables.REFRESH_TOKENS
-        region = Config.AWS_REGION
 
     token: str = UnicodeAttribute(hash_key=True, null=False)
     user_id: str = UnicodeAttribute(null=False)

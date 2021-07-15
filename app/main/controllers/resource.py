@@ -2,6 +2,7 @@
 Created 15/05/2021
 Abstract API Resource
 """
+from app.main.config import Config
 from datetime import date, datetime
 from sys import intern
 from uuid import uuid4
@@ -10,6 +11,7 @@ from app.main.constants import ResponseStatus
 from app.main.util.logger import AppLogger
 from flask import has_request_context, request
 from flask_restx import Resource as FlaskResource
+from flask.globals import current_app
 
 
 class Resource(FlaskResource):
@@ -71,6 +73,7 @@ class Resource(FlaskResource):
             return response, code
         except Exception as exc:  # pylint: disable=broad-except
             self._log_failure(exc)
+            raise exc
             return self.format_failure(500, "Internal Server Error")
 
     @property

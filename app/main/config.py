@@ -16,6 +16,7 @@ class Config:
     AWS_REGION = os.environ["AWS_REGION"]
     DEBUG = False
     TESTING = False
+    DYNAMODB_HOST = "http://localhost:8000" if AW_ENV_NAME == "LOCAL" else None
 
     class Tables:
         """ DynamoDB Tables """
@@ -31,6 +32,11 @@ class DevelopmentConfig(Config):
     DEBUG = True
     CORS_ALLOW_HEADERS = ["authorization", "content-type"]
     CORS_ORIGINS = ["admin.local.africawater.org"]
+
+
+class LocalConfig(DevelopmentConfig):
+    """ Config for a Local Dev Environment """
+    DYNAMODB_HOST = "http://localhost:8000"
 
 
 class TestingConfig(Config):

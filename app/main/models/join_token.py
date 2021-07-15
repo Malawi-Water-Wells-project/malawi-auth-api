@@ -2,6 +2,7 @@
 Created 17/06/2021
 DynamoDB Join Token Model
 """
+from app.main.models.metadata import DefaultMeta
 from app.main.config import Config
 from datetime import datetime, timedelta
 from pynamodb.models import Model
@@ -23,10 +24,9 @@ class JoinToken(Model):
     village_name = UnicodeAttribute()
     ttl = TTLAttribute(default=default_token_ttl)
 
-    class Meta:
+    class Meta(DefaultMeta):
         """ JoinToken Table Metadata """
         table_name = Config.Tables.JOIN_TOKENS
-        region = Config.AWS_REGION
 
     @property
     def dictionary(self):

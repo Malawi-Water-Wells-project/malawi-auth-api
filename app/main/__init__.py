@@ -1,6 +1,7 @@
 """
 Created 05/02/2021
 """
+from app.main.models import setup_test_tables
 from app.main.config import get_config_for_env
 from app.main.controllers import bind_controllers
 from dotenv import load_dotenv
@@ -30,5 +31,6 @@ class Application():
         )
 
         bind_controllers(self.api)
+        setup_test_tables(self.config.AW_ENV_NAME)
 
         self.flask.register_blueprint(blueprint)

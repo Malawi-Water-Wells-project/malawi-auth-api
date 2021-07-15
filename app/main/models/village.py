@@ -3,6 +3,7 @@ Created 05/02/2021
 DynamoDB Model for a Village
 """
 
+from app.main.models.metadata import DefaultMeta
 from datetime import datetime
 from pynamodb.models import Model
 from pynamodb.attributes import (
@@ -29,10 +30,9 @@ class Village(Model):
     wells: Set[str]         # List of Well IDs
     """
 
-    class Meta:
+    class Meta(DefaultMeta):
         """ Metadata for Villages Table """
         table_name = Config.Tables.VILLAGES
-        region = Config.AWS_REGION
 
     village_id: str = UnicodeAttribute(
         hash_key=True,

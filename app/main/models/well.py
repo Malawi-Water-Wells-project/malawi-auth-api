@@ -1,7 +1,8 @@
 """
 Created 01/03/2021
-SQLAlchemy Model for a Well
+DynamoDB Model for a Well
 """
+from app.main.models.metadata import DefaultMeta
 from app.main.config import Config
 from uuid import uuid4
 from pynamodb.attributes import UnicodeAttribute
@@ -20,10 +21,9 @@ class Well(Model):
     latitude: float     # Latitude of the well
     longitude: float    # Longitude of the well
     """
-    class Meta:
+    class Meta(DefaultMeta):
         """ Metadata for Well Table """
         table_name = Config.Tables.WELLS
-        region = Config.AWS_REGION
 
     well_id: str = UnicodeAttribute(
         hash_key=True,

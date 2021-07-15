@@ -2,6 +2,7 @@
 Created 05/02/2021
 DynamoDB Model for a User
 """
+from app.main.models.metadata import DefaultMeta
 from app.main.config import Config
 from argon2 import PasswordHasher
 from datetime import datetime
@@ -10,15 +11,14 @@ from uuid import uuid4
 from argon2.exceptions import VerifyMismatchError
 from pynamodb.attributes import UTCDateTimeAttribute, UnicodeAttribute
 from pynamodb.models import Model
-from pynamodb.indexes import KeysOnlyProjection, LocalSecondaryIndex
+from pynamodb.indexes import GlobalSecondaryIndex, KeysOnlyProjection, LocalSecondaryIndex
 
 
-class UserIndex(LocalSecondaryIndex):
+class UserIndex(GlobalSecondaryIndex):
     """ User Indexes """
-    class Meta:
+    class Meta(DefaultMeta):
         """ Metadata for User Index """
         projection = KeysOnlyProjection()
-        region = Config.AWS_REGION
 
     user_id = UnicodeAttribute(default=lambda: str(uuid4()), hash_key=True)
 
@@ -34,7 +34,7 @@ class User(Model):
     role: str           # The user's role in the system
     created_on: Date    # Creation timestamp
     """
-    class Meta:
+    class Meta(DefaultMeta):
         """ Metadata for User Table """
         table_name = Config.Tables.USERS
         region = Config.AWS_REGION
